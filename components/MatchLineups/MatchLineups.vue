@@ -17,13 +17,37 @@
 		<figure v-if="matchDetail.lineups[0].formation">
 			<nuxt-img class="matchLineups__field" height="539" src="/field.png" />
 		</figure>
-		<div class="" v-for="team in matchDetail.lineups" :key="team.team.id">
-			<div class="matchLineupsCard__container">
-				<nuxt-img v-if="team.team.logo" class="matchLineupsCard__logo" width="24" height="24" :src="team.team.logo" :alt="team.team.name + ' logo'" />
-				<h3 class="matchLineupsCard__name">{{ team.team.name }}</h3>
-				<svg class="matchLineupsCard__dropdown" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M7.41 8.29492L12 12.8749L16.59 8.29492L18 9.70492L12 15.7049L6 9.70492L7.41 8.29492Z" fill="currentcolor" />
-				</svg>
+		<div class="matchLineups__teamList">
+			<div class="matchLineupsCard isOpen" v-for="team in matchDetail.lineups" :key="team.team.id" @click="openTeamLineup(team.team.name)">
+				<div class="matchLineupsCard__container">
+					<nuxt-img v-if="team.team.logo" class="matchLineupsCard__logo" width="24" height="24" :src="team.team.logo" :alt="team.team.name + ' logo'" />
+					<h3 class="matchLineupsCard__name">{{ team.team.name }}</h3>
+					<svg class="matchLineupsCard__dropdown" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M7.41 8.29492L12 12.8749L16.59 8.29492L18 9.70492L12 15.7049L6 9.70492L7.41 8.29492Z" fill="currentcolor" />
+					</svg>
+					<div class="matchLineupsCard__teamListContainer">
+						<span class="matchLineupsCard__coach" v-if="team.coach.name">
+							<nuxt-img v-if="team.coach.photo" class="matchLineupsCard__coachPhoto" width="24" height="24" :src="team.coach.photo" :alt="team.coach.name + ' photo'" />
+							<span class="matchLineupsCard__coachName">{{ team.coach.name }}</span>
+							<span class="matchLineupsCard__coachTag">Coach</span>
+						</span>
+						<div class="matchLineupsCard__player" v-for="players in team.startXI" :key="players.player.id">
+							<nuxt-img v-if="players.photo" class="matchLineupsCard__playerPhoto" width="24" height="24" :src="players.player.photo" :alt="players.player.name + ' photo'" />
+							<span class="matchLineupsCard__playerNumber">{{ players.player.number }}</span>
+							<span class="matchLineupsCard__playerName">{{ players.player.name }}</span>
+							<span class="matchLineupsCard__playerMatchEvent">Coach</span>
+						</div>
+						<div class="matchLineupsCard__bench">
+							<span class="matchLineupsCard__title">Bench</span>
+							<div class="matchLineupsCard__player" v-for="players in team.substitutes" :key="players.player.id">
+								<nuxt-img v-if="players.photo" class="matchLineupsCard__playerPhoto" width="24" height="24" :src="players.player.photo" :alt="players.player.name + ' photo'" />
+								<span class="matchLineupsCard__playerNumber">{{ players.player.number }}</span>
+								<span class="matchLineupsCard__playerName">{{ players.player.name }}</span>
+								<span class="matchLineupsCard__playerMatchEvent">Coach</span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -42,6 +66,7 @@
 			}
 		},
 		setup(props) {
+			const isOpen = ref([]);
 			const getGrid = formation => formation?.split("-").length + 1;
 			const getPlayerGridPosition = grid => {
 				const row = grid.split(":")[0];
@@ -53,12 +78,21 @@
 			const getPlayersFromRow = (starters, index) => starters.filter(player => player.player.grid.split(":")[0] == index);
 			const getPlayerName = name => `${name.charAt(0)}. ${name.split(" ").pop()}`;
 
+			const openTeamLineup = teamName => {
+				if (isOpen.value.includes(teamName)) {
+					isOpen.value = isOpen.value.filter(name => name != teamName);
+				} else {
+					isOpen.value.push(teamName);
+				}
+			};
 			return {
 				getGrid,
 				getPlayerGridPosition,
 				getPlayersFromRow,
 				getPlayerName,
-				getGridColumns
+				getGridColumns,
+				openTeamLineup,
+				isOpen
 			};
 		}
 	};
@@ -134,9 +168,6 @@
 			}
 		}
 
-		&__field {
-		}
-
 		&__fieldGrid {
 			display: flex;
 			height: 100%;
@@ -178,6 +209,111 @@
 				font-weight: 600;
 				text-align: center;
 			}
+		}
+
+		&__teamList {
+			margin-top: 24px;
+			display: grid;
+			grid-template-columns: 1fr;
+			grid-column: 1/-1;
+		}
+	}
+
+	.matchLineupsCard {
+		$this: &;
+
+		&__container {
+			display: grid;
+			grid-template-columns: 40px 1fr auto auto;
+			gap: 0 16px;
+			padding: 8px 16px;
+			align-items: center;
+			border-bottom: 1px solid rgba(183, 183, 183, 0.3);
+		}
+
+		&.isOpen {
+			border: 1px solid rgba(183, 183, 183, 0.3);
+
+			#{$this}__container {
+				background: var(--color-bg--black);
+			}
+			#{$this}__dropdown {
+				color: #fff;
+				transform: rotateX(180deg);
+				box-sizing: content-box;
+			}
+		}
+		&__logo {
+			box-sizing: content-box;
+		}
+
+		&__name {
+			font-size: 16px;
+			font-weight: 400;
+			color: #212121;
+		}
+
+		&__gamesNumber {
+			font-size: 14px;
+		}
+
+		&__liveGamesNumber {
+			color: #ffa800;
+		}
+
+		&__dropdown {
+			grid-column: -1;
+			transition: transform 0.3s ease;
+			padding-left: 0;
+			box-sizing: content-box;
+		}
+
+		&__teamListContainer {
+			grid-column: 1/6;
+			background: white;
+			padding: 16px;
+			display: grid;
+			gap: 16px 0;
+		}
+
+		&__coach {
+			grid-template-columns: 24px 1fr auto;
+			font-weight: 600;
+			gap: 0 10px;
+			padding-bottom: 16px;
+			border-bottom: 1px solid #dcdcdc;
+		}
+
+		&__coachName {
+			color: #212121;
+			width: 100%;
+		}
+
+		&__coachTag {
+			color: #939393;
+		}
+
+		&__player {
+			display: grid;
+			font-weight: 600;
+			grid-template-columns: 40px 1fr auto;
+			gap: 0 10px;
+		}
+
+		&__playerName {
+			width: 100%;
+		}
+
+		&__bench {
+			margin-top: 16px;
+			padding-top: 16px;
+			border-top: 1px solid #dcdcdc;
+			display: grid;
+			gap: 16px 0;
+		}
+
+		&__title {
+			display: block;
 		}
 	}
 </style>
