@@ -19,7 +19,14 @@
 		</figure>
 		<div class="matchLineups__teamList">
 			<div class="matchLineupsCard isOpen" v-for="team in matchDetail.lineups" :key="team.team.id" @click="openTeamLineup(team.team.name)">
-				<div class="matchLineupsCard__container">
+				<CardTeamLineup :team="team" :isOpen="getOpenTeamLineup(team.team.name) ? 'isOpen' : ''">
+					<div class="matchLineupsCard__teamListContainer" v-if="getOpenTeamLineup(team.team.name)">
+						<CardPlayerLineup />
+						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" />
+						<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" />
+					</div>
+				</CardTeamLineup>
+				<!-- <div class="matchLineupsCard__container">
 					<nuxt-img v-if="team.team.logo" class="matchLineupsCard__logo" width="24" height="24" :src="team.team.logo" :alt="team.team.name + ' logo'" />
 					<h3 class="matchLineupsCard__name">{{ team.team.name }}</h3>
 					<svg class="matchLineupsCard__dropdown" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,7 +54,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
@@ -55,11 +62,16 @@
 
 <script>
 	import { reactive, watch, computed, ref, useFetch } from "@nuxtjs/composition-api";
+	import CardTeamLineup from "@/components/CardTeamLineup/CardTeamLineup.vue";
+	import CardPlayerLineup from "@/components/CardPlayerLineup/CardPlayerLineup.vue";
 
 	import store from "@/store.js";
 
 	export default {
-		components: {},
+		components: {
+			CardTeamLineup,
+			CardPlayerLineup
+		},
 		props: {
 			matchDetail: {
 				type: Object
@@ -85,6 +97,9 @@
 					isOpen.value.push(teamName);
 				}
 			};
+
+			const getOpenTeamLineup = teamName => isOpen.value.find(item => item == teamName);
+
 			return {
 				getGrid,
 				getPlayerGridPosition,
@@ -92,6 +107,7 @@
 				getPlayerName,
 				getGridColumns,
 				openTeamLineup,
+				getOpenTeamLineup,
 				isOpen
 			};
 		}
@@ -231,43 +247,6 @@
 			border-bottom: 1px solid rgba(183, 183, 183, 0.3);
 		}
 
-		&.isOpen {
-			border: 1px solid rgba(183, 183, 183, 0.3);
-
-			#{$this}__container {
-				background: var(--color-bg--black);
-			}
-			#{$this}__dropdown {
-				color: #fff;
-				transform: rotateX(180deg);
-				box-sizing: content-box;
-			}
-		}
-		&__logo {
-			box-sizing: content-box;
-		}
-
-		&__name {
-			font-size: 16px;
-			font-weight: 400;
-			color: #212121;
-		}
-
-		&__gamesNumber {
-			font-size: 14px;
-		}
-
-		&__liveGamesNumber {
-			color: #ffa800;
-		}
-
-		&__dropdown {
-			grid-column: -1;
-			transition: transform 0.3s ease;
-			padding-left: 0;
-			box-sizing: content-box;
-		}
-
 		&__teamListContainer {
 			grid-column: 1/6;
 			background: white;
@@ -291,17 +270,6 @@
 
 		&__coachTag {
 			color: #939393;
-		}
-
-		&__player {
-			display: grid;
-			font-weight: 600;
-			grid-template-columns: 40px 1fr auto;
-			gap: 0 10px;
-		}
-
-		&__playerName {
-			width: 100%;
 		}
 
 		&__bench {
