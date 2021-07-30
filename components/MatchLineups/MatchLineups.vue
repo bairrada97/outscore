@@ -21,9 +21,15 @@
 			<div class="matchLineupsCard isOpen" v-for="team in matchDetail.lineups" :key="team.team.id" @click="openTeamLineup(team.team.name)">
 				<CardTeamLineup :team="team" :isOpen="getOpenTeamLineup(team.team.name) ? 'isOpen' : ''">
 					<div class="matchLineupsCard__teamListContainer" v-if="getOpenTeamLineup(team.team.name)">
-						<CardPlayerLineup />
-						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" />
-						<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" />
+						<div class="matchLineupsCard__bench">
+							<CardPlayerLineup :player="team.coach" />
+						</div>
+
+						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" :statistics="getPlayerStatistics(player.player.id)[0]" />
+						<div class="matchLineupsCard__bench">
+							<span class="matchLineupsCard__title">Bench</span>
+							<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" />
+						</div>
 					</div>
 				</CardTeamLineup>
 				<!-- <div class="matchLineupsCard__container">
@@ -78,6 +84,7 @@
 			}
 		},
 		setup(props) {
+			const { players } = props.matchDetail;
 			const isOpen = ref([]);
 			const getGrid = formation => formation?.split("-").length + 1;
 			const getPlayerGridPosition = grid => {
@@ -89,7 +96,8 @@
 			const getGridColumns = column => `repeat(${column}, 1fr)`;
 			const getPlayersFromRow = (starters, index) => starters.filter(player => player.player.grid.split(":")[0] == index);
 			const getPlayerName = name => `${name.charAt(0)}. ${name.split(" ").pop()}`;
-
+			console.log("cenas");
+			const getPlayerStatistics = playerID => players.map(team => team.players.find(item => item.player.id == playerID));
 			const openTeamLineup = teamName => {
 				if (isOpen.value.includes(teamName)) {
 					isOpen.value = isOpen.value.filter(name => name != teamName);
@@ -108,6 +116,7 @@
 				getGridColumns,
 				openTeamLineup,
 				getOpenTeamLineup,
+				getPlayerStatistics,
 				isOpen
 			};
 		}

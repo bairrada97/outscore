@@ -3,7 +3,7 @@
 		<nuxt-img v-if="player.photo" class="cardPlayerLineup__playerPhoto" width="24" height="24" :src="player.photo" :alt="player.name + ' photo'" />
 		<span class="cardPlayerLineup__playerNumber" v-if="player.number">{{ player.number }}</span>
 		<span class="cardPlayerLineup__playerName" v-if="player.name">{{ player.name }}</span>
-		<span class="cardPlayerLineup__playerMatchEvent">Coach</span>
+		<span class="cardPlayerLineup__playerMatchEvent" v-if="statistics">{{ statistics.statistics }}</span>
 	</div>
 </template>
 
@@ -15,10 +15,14 @@
 		props: {
 			player: {
 				type: Object
+			},
+			statistics: {
+				type: Object
 			}
 		},
 		setup(props) {
-			console.log(props.player);
+			const statistics = props.statistics[0];
+			console.log(statistics);
 			return {};
 		}
 	};
