@@ -24,43 +24,19 @@
 						<div class="matchLineupsCard__bench">
 							<CardPlayerLineup :player="team.coach" />
 						</div>
-
-						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" :statistics="getPlayerStatistics(player.player.id)[0]" />
+						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" :events="getPlayerEvents(player.player.id)" />
 						<div class="matchLineupsCard__bench">
 							<span class="matchLineupsCard__title">Bench</span>
-							<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" />
+							<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" :events="getPlayerEvents(player.player.id)" />
 						</div>
 					</div>
 				</CardTeamLineup>
-				<!-- <div class="matchLineupsCard__container">
-					<nuxt-img v-if="team.team.logo" class="matchLineupsCard__logo" width="24" height="24" :src="team.team.logo" :alt="team.team.name + ' logo'" />
-					<h3 class="matchLineupsCard__name">{{ team.team.name }}</h3>
-					<svg class="matchLineupsCard__dropdown" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M7.41 8.29492L12 12.8749L16.59 8.29492L18 9.70492L12 15.7049L6 9.70492L7.41 8.29492Z" fill="currentcolor" />
-					</svg>
-					<div class="matchLineupsCard__teamListContainer">
-						<span class="matchLineupsCard__coach" v-if="team.coach.name">
-							<nuxt-img v-if="team.coach.photo" class="matchLineupsCard__coachPhoto" width="24" height="24" :src="team.coach.photo" :alt="team.coach.name + ' photo'" />
-							<span class="matchLineupsCard__coachName">{{ team.coach.name }}</span>
-							<span class="matchLineupsCard__coachTag">Coach</span>
-						</span>
-						<div class="matchLineupsCard__player" v-for="players in team.startXI" :key="players.player.id">
-							<nuxt-img v-if="players.photo" class="matchLineupsCard__playerPhoto" width="24" height="24" :src="players.player.photo" :alt="players.player.name + ' photo'" />
-							<span class="matchLineupsCard__playerNumber">{{ players.player.number }}</span>
-							<span class="matchLineupsCard__playerName">{{ players.player.name }}</span>
-							<span class="matchLineupsCard__playerMatchEvent">Coach</span>
-						</div>
-						<div class="matchLineupsCard__bench">
-							<span class="matchLineupsCard__title">Bench</span>
-							<div class="matchLineupsCard__player" v-for="players in team.substitutes" :key="players.player.id">
-								<nuxt-img v-if="players.photo" class="matchLineupsCard__playerPhoto" width="24" height="24" :src="players.player.photo" :alt="players.player.name + ' photo'" />
-								<span class="matchLineupsCard__playerNumber">{{ players.player.number }}</span>
-								<span class="matchLineupsCard__playerName">{{ players.player.name }}</span>
-								<span class="matchLineupsCard__playerMatchEvent">Coach</span>
-							</div>
-						</div>
-					</div>
-				</div> -->
+			</div>
+		</div>
+		<div class="matchLineups__eventsLabels">
+			<div v-for="(labels, index) of eventsLabels" :key="index">
+				<nuxt-img v-if="labels.img" width="16" height="16" :src="labels.img" :alt="labels.name + ' logo'" />
+				<span>{{ labels.name }}</span>
 			</div>
 		</div>
 	</div>
@@ -84,8 +60,51 @@
 			}
 		},
 		setup(props) {
-			const { players } = props.matchDetail;
+			const { players, events } = props.matchDetail;
 			const isOpen = ref([]);
+
+			const eventsLabels = ref([
+				{
+					name: "Normal goal",
+					img: require("~/assets/icons/event__goal.svg")
+				},
+				{
+					name: "Own Goal",
+					img: require("~/assets/icons/event__owngoal.svg")
+				},
+				{
+					name: "Penalty",
+					img: require("~/assets/icons/event__penaltyGoal.svg")
+				},
+				{
+					name: "Missed Penalty",
+					img: require("~/assets/icons/event__penaltyMissed.svg")
+				},
+				{
+					name: "Yellow Card",
+					img: require("~/assets/icons/event__cardYellow.svg")
+				},
+				{
+					name: "Second Yellow Card",
+					img: require("~/assets/icons/event__cardYellow.svg")
+				},
+				{
+					name: "Red Card",
+					img: require("~/assets/icons/event__cardRed.svg")
+				},
+				{
+					name: "Goal Cancelled",
+					img: require("~/assets/icons/event__cardRed.svg")
+				},
+				{
+					name: "Penalty Confirmed",
+					img: require("~/assets/icons/event__penaltyGoal.svg")
+				},
+				{
+					name: "Injured",
+					img: require("~/assets/icons/event__goal.svg")
+				}
+			]);
 			const getGrid = formation => formation?.split("-").length + 1;
 			const getPlayerGridPosition = grid => {
 				const row = grid.split(":")[0];
@@ -96,8 +115,9 @@
 			const getGridColumns = column => `repeat(${column}, 1fr)`;
 			const getPlayersFromRow = (starters, index) => starters.filter(player => player.player.grid.split(":")[0] == index);
 			const getPlayerName = name => `${name.charAt(0)}. ${name.split(" ").pop()}`;
-			console.log("cenas");
-			const getPlayerStatistics = playerID => players.map(team => team.players.find(item => item.player.id == playerID));
+
+			const getPlayerEvents = playerID => events.filter(event => event.player.id == playerID);
+
 			const openTeamLineup = teamName => {
 				if (isOpen.value.includes(teamName)) {
 					isOpen.value = isOpen.value.filter(name => name != teamName);
@@ -116,7 +136,8 @@
 				getGridColumns,
 				openTeamLineup,
 				getOpenTeamLineup,
-				getPlayerStatistics,
+				getPlayerEvents,
+				eventsLabels,
 				isOpen
 			};
 		}
@@ -242,55 +263,14 @@
 			grid-template-columns: 1fr;
 			grid-column: 1/-1;
 		}
-	}
 
-	.matchLineupsCard {
-		$this: &;
-
-		&__container {
+		&__eventsLabels {
 			display: grid;
-			grid-template-columns: 40px 1fr auto auto;
-			gap: 0 16px;
-			padding: 8px 16px;
-			align-items: center;
-			border-bottom: 1px solid rgba(183, 183, 183, 0.3);
-		}
-
-		&__teamListContainer {
-			grid-column: 1/6;
-			background: white;
-			padding: 16px;
-			display: grid;
-			gap: 16px 0;
-		}
-
-		&__coach {
-			grid-template-columns: 24px 1fr auto;
-			font-weight: 600;
-			gap: 0 10px;
-			padding-bottom: 16px;
-			border-bottom: 1px solid #dcdcdc;
-		}
-
-		&__coachName {
-			color: #212121;
-			width: 100%;
-		}
-
-		&__coachTag {
-			color: #939393;
-		}
-
-		&__bench {
-			margin-top: 16px;
-			padding-top: 16px;
-			border-top: 1px solid #dcdcdc;
-			display: grid;
-			gap: 16px 0;
-		}
-
-		&__title {
-			display: block;
+			grid-template-columns: 1fr 1fr;
+			grid-column: 1/-1;
+			margin-top: 24px;
+			padding: 0 16px;
+			gap: 8px 0;
 		}
 	}
 </style>

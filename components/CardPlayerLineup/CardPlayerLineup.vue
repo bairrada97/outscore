@@ -3,7 +3,7 @@
 		<nuxt-img v-if="player.photo" class="cardPlayerLineup__playerPhoto" width="24" height="24" :src="player.photo" :alt="player.name + ' photo'" />
 		<span class="cardPlayerLineup__playerNumber" v-if="player.number">{{ player.number }}</span>
 		<span class="cardPlayerLineup__playerName" v-if="player.name">{{ player.name }}</span>
-		<span class="cardPlayerLineup__playerMatchEvent" v-if="statistics">{{ statistics.statistics }}</span>
+		<div v-if="events"><img v-for="(event, index) in events" :key="index" :src="getEventIcon(event.detail)" /></div>
 	</div>
 </template>
 
@@ -16,14 +16,39 @@
 			player: {
 				type: Object
 			},
-			statistics: {
-				type: Object
+			events: {
+				type: Array
 			}
 		},
 		setup(props) {
-			const statistics = props.statistics[0];
-			console.log(statistics);
-			return {};
+			const { events } = props;
+
+			const getEventIcon = typeDetail => {
+				switch (typeDetail) {
+					case "Normal Goal":
+						return require("~/assets/icons/event__goal.svg");
+					case "Own Goal":
+						return require("~/assets/icons/event__owngoal.svg");
+					case "Penalty":
+						return require("~/assets/icons/event__penaltyGoal.svg");
+					case "Missed Penalty":
+						return require("~/assets/icons/event__penaltyMissed.svg");
+					case "Yellow Card":
+						require("~/assets/icons/event__cardYellow.svg");
+					case "Second Yellow Card":
+						return require("~/assets/icons/event__cardYellow.svg");
+					case "Red Card":
+						return require("~/assets/icons/event__cardRed.svg");
+					case "Goal Cancelled":
+						return require("~/assets/icons/event__cardRed.svg");
+					case "Penalty Confirmed":
+						return require("~/assets/icons/event__penaltyGoal.svg");
+				}
+			};
+
+			return {
+				getEventIcon
+			};
 		}
 	};
 </script>
