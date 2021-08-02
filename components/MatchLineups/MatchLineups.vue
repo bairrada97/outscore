@@ -18,15 +18,15 @@
 			<nuxt-img class="matchLineups__field" height="539" src="/field.png" />
 		</figure>
 		<div class="matchLineups__teamList">
-			<div class="matchLineupsCard isOpen" v-for="team in matchDetail.lineups" :key="team.team.id" @click="openTeamLineup(team.team.name)">
+			<div class="matchLineups__cardContainer isOpen" v-for="team in matchDetail.lineups" :key="team.team.id" @click="openTeamLineup(team.team.name)">
 				<CardTeamLineup :team="team" :isOpen="getOpenTeamLineup(team.team.name) ? 'isOpen' : ''">
-					<div class="matchLineupsCard__teamListContainer" v-if="getOpenTeamLineup(team.team.name)">
-						<div class="matchLineupsCard__bench">
+					<div class="matchLineups__teamListContainer" v-if="getOpenTeamLineup(team.team.name)">
+						<div class="matchLineups__bench">
 							<CardPlayerLineup :player="team.coach" />
 						</div>
 						<CardPlayerLineup :player="player.player" v-for="player in team.startXI" :key="player.player.id" :events="getPlayerEvents(player.player.id)" />
-						<div class="matchLineupsCard__bench">
-							<span class="matchLineupsCard__title">Bench</span>
+						<div class="matchLineups__bench">
+							<span class="matchLineups__title">Bench</span>
 							<CardPlayerLineup :player="player.player" v-for="player in team.substitutes" :key="player.player.id" :events="getPlayerEvents(player.player.id)" />
 						</div>
 					</div>
@@ -272,5 +272,37 @@
 			padding: 0 16px;
 			gap: 8px 0;
 		}
+
+		&__cardContainer {
+			display: grid;
+			grid-template-columns: 40px 1fr auto auto;
+			gap: 0 16px;
+			padding: 8px 16px;
+			align-items: center;
+
+			border-bottom: 1px solid rgba(183, 183, 183, 0.3);
+		}
+
+		&__teamListContainer {
+			grid-column: 1/6;
+			background: white;
+			padding: 16px 0;
+			display: grid;
+			gap: 16px 0;
+		}
+
+		&__bench {
+			border-top: 1px solid #dcdcdc;
+			display: grid;
+			gap: 16px 0;
+		}
+
+		&__title {
+			display: block;
+		}
+	}
+
+	.matchLineupsCard {
+		$this: &;
 	}
 </style>

@@ -34,14 +34,14 @@
 <style lang="scss" scoped>
 	.cardTeamLineup {
 		$this: &;
+		grid-column: 1/-1;
 
 		&__container {
 			display: grid;
 			grid-template-columns: 40px 1fr auto auto;
 			gap: 0 16px;
-			padding: 8px 16px;
+			padding: 8px 0;
 			align-items: center;
-			border-bottom: 1px solid rgba(183, 183, 183, 0.3);
 		}
 
 		&.isOpen {
