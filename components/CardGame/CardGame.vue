@@ -5,11 +5,11 @@
 		<span class="cardGame__status" v-else>{{ game.fixture.status.short == "NS" ? getStartMatchTime(game.fixture.timestamp) : game.fixture.status.short }}</span>
 		<div class="cardGame__teamsContainer">
 			<div class="cardGame__team" :class="{ teamScored: game.teams.home.name == teamScored }">
-				<span class="cardGame__team__goal">{{ game.goals.home }}</span>
+				<span class="cardGame__team__goal">{{ game.score.penalty.home ? game.score.penalty.home : game.score.extratime.home ? game.score.extratime.home : game.goals.home }}</span>
 				<span class="cardGame__team__name">{{ game.teams.home.name }}</span>
 			</div>
 			<div class="cardGame__team" :class="{ teamScored: game.teams.away.name == teamScored }">
-				<span class="cardGame__team__goal">{{ game.goals.away }}</span>
+				<span class="cardGame__team__goal">{{ game.score.penalty.away ? game.score.penalty.away : game.score.extratime.away ? game.score.extratime.away : game.goals.away }}</span>
 				<span class="cardGame__team__name">{{ game.teams.away.name }}</span>
 			</div>
 		</div>

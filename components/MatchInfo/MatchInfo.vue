@@ -9,6 +9,14 @@
 				<div class="matchInfo__statusContainer">
 					<div class="matchInfo__scoreContainer">
 						<span class="matchInfo__score" v-for="(score, index) in match.goals" :key="index">{{ score ? score : 0 }}</span>
+
+						<div class="matchInfo__extraInfo" v-if="match.score.penalty.home && match.score.penalty.away">
+							Penalties
+							<span class="matchInfo__extraInfoContainer">
+								<span class="matchInfo__extraScore" v-for="(score, index) in match.score.penalty" :key="index"> {{ score }} </span>
+								<span class="matchInfo__extraScore--divider"> - </span>
+							</span>
+						</div>
 					</div>
 					<!-- <span class="matchInfo____status" v-if="match.fixture">{{ match.fixture.status.short == "FT" ? "FT" : match.fixture.status.elapsed ? match.fixture.status.elapsed : getDate(match.fixture.timestamp) }}</span> -->
 				</div>
@@ -93,13 +101,36 @@
 		}
 
 		&__scoreContainer {
-			display: flex;
+			display: grid;
 			gap: 16px;
+			text-align: center;
 		}
 
 		&__score {
 			font-size: 20px;
 			font-weight: 700;
+			grid-row: 1;
+		}
+
+		&__extraInfo {
+			grid-column: 1/3;
+			grid-row: 2;
+			text-align: center;
+		}
+
+		&__extraInfoContainer {
+			display: grid;
+		}
+
+		&__extraScore {
+			font-size: 14px;
+			font-weight: 700;
+			grid-row: 1;
+
+			&--divider {
+				grid-column: 2;
+				grid-row: 1;
+			}
 		}
 
 		&__bar {

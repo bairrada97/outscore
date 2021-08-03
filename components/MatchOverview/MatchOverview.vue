@@ -1,7 +1,8 @@
 <template>
 	<div class="matchOverview">
 		<div class="matchOverview__period" v-for="(periods, name) in reversePeriods" :key="name">
-			<h3 class="matchOverview__periodName">{{ periods.period }} Half</h3>
+			<h3 class="matchOverview__periodName" v-if="periods.period.includes('first') || periods.period.includes('second')">{{ periods.period }} Half</h3>
+			<h3 class="matchOverview__periodName" v-else>{{ periods.period }}</h3>
 			<div class="matchOverview__periodTeam">
 				<CardEvent v-for="(event, index) in periods.events" :key="index" :event="event" />
 			</div>
@@ -31,16 +32,25 @@
 				return props.matchDetail?.events?.reduce((acc, event) => {
 					let homeTeam = computed(() => props.matchDetail.teams.home);
 					let awayTeam = computed(() => props.matchDetail.teams.away);
-
-					event.time.elapsed <= 45 ? (acc.first = acc.first || new Set()) : (acc.second = acc.second || new Set());
+					console.log("cenas");
+					if (event.time.elapsed <= 45) acc.first = acc.first || new Set();
+					if (event.time.elapsed > 45 && event.time.elapsed <= 90) acc.second = acc.second || new Set();
+					if (event.time.elapsed > 90 && event.time.elapsed <= 120 && event.comments !== "Penalty Shootout") acc.overtime = acc.overtime || new Set();
+					if (event.comments == "Penalty Shootout") acc.penalty = acc.penalty || new Set();
 					Object.defineProperty(event, "side", { value: "", writable: true, enumerable: true, configurable: true });
 
 					if (event.time.elapsed <= 45) {
 						event.team.id == homeTeam.value.id ? (event["side"] = "home") : (event["side"] = "away");
 						acc.first.add(event);
-					} else {
+					} else if (event.time.elapsed > 45 && event.time.elapsed <= 90) {
 						event.team.id == homeTeam.value.id ? (event["side"] = "home") : (event["side"] = "away");
 						acc.second.add(event);
+					} else if (event.time.elapsed > 90 && event.time.elapsed <= 120 && event.comments !== "Penalty Shootout") {
+						event.team.id == homeTeam.value.id ? (event["side"] = "home") : (event["side"] = "away");
+						acc.overtime.add(event);
+					} else if (event.comments == "Penalty Shootout") {
+						event.team.id == homeTeam.value.id ? (event["side"] = "home") : (event["side"] = "away");
+						acc.penalty.add(event);
 					}
 
 					return acc;
