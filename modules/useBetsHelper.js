@@ -45,6 +45,7 @@ export default function () {
 			getTotalCards(acc, stats, 5.5);
 			getTotalCards(acc, stats, 6.5);
 			getTotalCards(acc, stats, 7.5);
+			getDrawNoBet(acc, stats);
 			return acc;
 		}, {});
 	});
@@ -215,6 +216,34 @@ export default function () {
 		if (acc["Total Cards"][`+${value}`].away.name == awayTeamSide?.name) {
 			if (totalCorners > value) {
 				acc["Total Cards"][`+${value}`].away.value++;
+			}
+		}
+	};
+
+	const getDrawNoBet = (acc, stats) => {
+		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
+		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
+		const goalsHome = stats.goals.home;
+		const goalsAway = stats.goals.away;
+		if (stats.fixture.status.short == "FT") {
+			acc["Draw No Bet"] = acc["Draw No Bet"] || {};
+			acc["Draw No Bet"][`yes`] = acc["Draw No Bet"][`yes`] || {};
+			acc["Draw No Bet"][`yes`].home = acc["Draw No Bet"][`yes`].home || {};
+			acc["Draw No Bet"][`yes`].away = acc["Draw No Bet"][`yes`].away || {};
+			acc["Draw No Bet"][`yes`].home.name = homeTeam.value.name;
+			acc["Draw No Bet"][`yes`].away.name = awayTeam.value.name;
+			acc["Draw No Bet"][`yes`].home.value = acc["Draw No Bet"][`yes`].home.value || 0;
+			acc["Draw No Bet"][`yes`].away.value = acc["Draw No Bet"][`yes`].away.value || 0;
+
+			if (acc["Draw No Bet"][`yes`].home.name == homeTeamSide?.name) {
+				if (homeTeamSide.winner || goalsHome == goalsAway) {
+					acc["Draw No Bet"][`yes`].home.value++;
+				}
+			}
+			if (acc["Draw No Bet"][`yes`].away.name == awayTeamSide?.name) {
+				if (awayTeamSide.winner || goalsHome == goalsAway) {
+					acc["Draw No Bet"][`yes`].away.value++;
+				}
 			}
 		}
 	};
