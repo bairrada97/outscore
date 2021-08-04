@@ -1,6 +1,7 @@
 <template>
 	<div class="matchBetsHelper">
 		<ul class="matchBetsHelper__list" v-if="betsHelper">
+			<span>{{ extraInfo }}</span>
 			<li class="matchBetsHelper__item" v-for="(category, index) in betsHelper" :key="index">
 				<h3 class="matchBetsHelper__title">{{ index }}</h3>
 				<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
@@ -27,7 +28,7 @@
 			}
 		},
 		setup(props) {
-			const { loadBetsHelper, betsHelper } = useBetsHelper();
+			const { loadBetsHelper, betsHelper, extraInfo } = useBetsHelper(props.matchDetail);
 			const { home, away } = props.matchDetail.teams;
 			const lastGamesLength = 3;
 
@@ -40,7 +41,8 @@
 			return {
 				lastGamesLength,
 				fetchState,
-				betsHelper
+				betsHelper,
+				extraInfo
 			};
 		}
 	};

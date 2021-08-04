@@ -2,10 +2,12 @@ import { defineComponent, reactive, computed, ref, onMounted, useFetch, onActiva
 import store from "@/store.js";
 import axios from "axios";
 
-export default function () {
+export default function (fixture) {
 	const betsHelperResponse = ref([]);
 	const homeTeam = ref(null);
 	const awayTeam = ref(null);
+	const currentLeague = fixture.league;
+	const extraInfo = ref("")
 	const loadBetsHelper = async (home, away) => {
 		try {
 			await axios.get(`https://api-football-v3.herokuapp.com/api/v3/betshelper/?home=${home.id}&away=${away.id}`).then(response => {
@@ -23,7 +25,10 @@ export default function () {
 		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
 		const { away, home, h2h } = betsHelperResponse.value;
 		const uniqueMatches = [...new Map([...away, ...home, ...h2h].map(item => [item.fixture.id, item])).values()];
-
+		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
+		if(isDifferentCompetition){
+			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
+		}
 		return uniqueMatches?.reduce((acc, stats) => {
 			getGoals(acc, stats, 1.5);
 			getGoals(acc, stats, 2.5);
@@ -131,9 +136,12 @@ export default function () {
 	};
 
 	const getFirstTeamToScore = (acc, stats) => {
+		if(!!stats.events) return
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const firstGoalEvent = stats.events.find(events => events.type == "Goal");
+
+		
 
 		acc["First Team To Score"] = acc["First Team To Score"] || {};
 		acc["First Team To Score"][`yes`] = acc["First Team To Score"][`yes`] || {};
@@ -157,6 +165,7 @@ export default function () {
 	};
 
 	const getTotalCorners = (acc, stats, value) => {
+		if(!!stats.statistics) return
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const totalCorners =
@@ -189,6 +198,7 @@ export default function () {
 	};
 
 	const getTotalCards = (acc, stats, value) => {
+		if(!!stats.statistics) return
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const totalCorners =
@@ -246,10 +256,11 @@ export default function () {
 				}
 			}
 		}
-	};
+	}; 
 
 	return {
 		loadBetsHelper,
-		betsHelper
+		betsHelper,
+		extraInfo
 	};
 }
