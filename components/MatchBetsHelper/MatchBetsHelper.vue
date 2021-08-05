@@ -30,7 +30,7 @@
 		setup(props) {
 			const { loadBetsHelper, betsHelper, extraInfo } = useBetsHelper(props.matchDetail);
 			const { home, away } = props.matchDetail.teams;
-			const lastGamesLength = 3;
+			const lastGamesLength = 5;
 
 			const { fetch, fetchState } = useFetch(async () => {
 				await loadBetsHelper(home, away);

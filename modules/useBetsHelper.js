@@ -24,7 +24,7 @@ export default function (fixture) {
 	const betsHelper = computed(() => {
 		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
 		const { away, home, h2h } = betsHelperResponse.value;
-		const uniqueMatches = [...new Map([...away, ...home, ...h2h].map(item => [item.fixture.id, item])).values()];
+		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
 		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
 		if(isDifferentCompetition){
 			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
@@ -134,9 +134,9 @@ export default function (fixture) {
 			}
 		}
 	};
-
+ 
 	const getFirstTeamToScore = (acc, stats) => {
-		if(!!stats.events) return
+		
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const firstGoalEvent = stats.events.find(events => events.type == "Goal");
@@ -165,7 +165,7 @@ export default function (fixture) {
 	};
 
 	const getTotalCorners = (acc, stats, value) => {
-		if(!!stats.statistics) return
+	
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const totalCorners =
@@ -198,7 +198,7 @@ export default function (fixture) {
 	};
 
 	const getTotalCards = (acc, stats, value) => {
-		if(!!stats.statistics) return
+		
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const totalCorners =
@@ -235,7 +235,7 @@ export default function (fixture) {
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const goalsHome = stats.goals.home;
 		const goalsAway = stats.goals.away;
-		if (stats.fixture.status.short == "FT") {
+
 			acc["Draw No Bet"] = acc["Draw No Bet"] || {};
 			acc["Draw No Bet"][`yes`] = acc["Draw No Bet"][`yes`] || {};
 			acc["Draw No Bet"][`yes`].home = acc["Draw No Bet"][`yes`].home || {};
@@ -255,7 +255,7 @@ export default function (fixture) {
 					acc["Draw No Bet"][`yes`].away.value++;
 				}
 			}
-		}
+		
 	}; 
 
 	return {
