@@ -10,7 +10,7 @@ export default function () {
     const loadH2H = async teams => {
         try {
             const { away, home } = teams;
-            const h2hEndpoint = `https://api-football-v3.herokuapp.com/api/v3/fixtures/headtohead?h2h=${home.id}-${away.id}`;
+            const h2hEndpoint = `https://api-football-v3.herokuapp.com/api/v3/fixtures/headtohead?h2h=${home.id}-${away.id}&last=41`;
             const awayTeamEndpoint = `https://api-football-v3.herokuapp.com/api/v3/fixtures?team=${away.id}&last=41`;
             const homeTeamEndpoint = `https://api-football-v3.herokuapp.com/api/v3/fixtures?team=${home.id}&last=41`;
             const fetchURL = url => axios.get(url);
@@ -25,7 +25,7 @@ export default function () {
 
                     if (hasAwayTeamH2HUpdated) store.setAwayTeamH2H(responses[0].data.response);
                     if (hasHomeTeamH2HUpdated) store.setHomeTeamH2H(responses[1].data.response);
-                    if (hasH2HUpdated) store.setH2H(responses[2].data.response.reverse().filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN"));
+                    if (hasH2HUpdated) store.setH2H(responses[2].data.response.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN"));
                 })
                 .then(() => {
                     awayTeamH2H.value = store.getAwayTeamH2H();

@@ -18,12 +18,20 @@ const state = reactive({
         formated: null
     },
     isCalendarOpen: false,
-    selectedTab: ""
+    selectedTab: "",
+    selectedFilter: "",
+    betsHelper: {
+        away:{},
+        home:{},
+        h2h: {}
+    },
 });
 
 const getAwayTeamH2H = () => state.selectedMatch.awayTeamH2H;
 const getHomeTeamH2H = () => state.selectedMatch.homeTeamH2H;
 const getSelectedTab = () => state.selectedTab;
+const getSelectedFilter = () => state.selectedFilter;
+
 const getTimezone = () => state.timezone;
 
 const getH2H = () => {
@@ -95,9 +103,11 @@ const setSelectedMatch = response => {
     state.selectedMatch.match = response;
 };
 
+const getBetsHelper = () => state.betsHelper;
 const getSelectedMatch = () => {
     return state.selectedMatch.match;
 };
+
 
 const getSpecificGame = payload => {
     return state.games.response?.find(game => game.fixture.id == payload);
@@ -117,6 +127,12 @@ const getLiveToggle = () => {
 
 const setSelectedTab = response => {
     state.selectedTab = response;
+};
+const setSelectedFilter = response => {
+    state.selectedFilter = response;
+};
+const setBetsHelper = response => {
+    state.betsHelper = response;
 };
 
 export default {
@@ -147,5 +163,9 @@ export default {
     setSelectedTab,
     getSelectedTab,
     getStandings,
-    setStandings
+    setStandings,
+    setSelectedFilter,
+    getSelectedFilter,
+    getBetsHelper,
+    setBetsHelper
 };

@@ -21,7 +21,7 @@ export default function () {
 					store.setLiveToggle(true);
 					games.value = store.getGames();
 					const hasDataUpdated = !games.value.cacheDate || response.data.cacheDate != games.value.cacheDate;
-					if (hasDataUpdated) store.setGames(response.data);
+					if (hasDataUpdated) store.setGames(response.data); 
 				})
 				.then(() => {
 					games.value = store.getGames();

@@ -49,7 +49,6 @@
 			const { game } = props;
 			const teamScored = ref("");
 			const hasScored = ref(false);
-			console.log(props.winCondition);
 			const isGameLive = () => {
 				return game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "HT";
 			};

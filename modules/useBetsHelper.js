@@ -10,20 +10,60 @@ export default function (fixture) {
 	const extraInfo = ref("")
 	const loadBetsHelper = async (home, away) => {
 		try {
-			await axios.get(`https://api-football-v3.herokuapp.com/api/v3/betshelper/?home=${home.id}&away=${away.id}`).then(response => {
-				// betsHelper.value = store.getBetsHelper();
-				// const hasDataUpdated = !betsHelper.value.cacheDate || response.data.cacheDate != betsHelper.value.cacheDate;
-				// if (hasDataUpdated) store.setLiveGames(response.data);
-				betsHelperResponse.value = response.data;
+			await axios.get(`https://api-football-v3.herokuapp.com/api/v3/betshelper/?home=${home.id}&away=${away.id}`)
+			.then(response => {
+				 const hasDataUpdated = !betsHelperResponse.value.cacheDate || response.data.cacheDate != betsHelperResponse.value.cacheDate;
+				 if (hasDataUpdated) store.setBetsHelper(response.data);
+			}) 
+			.then(() => {
+                betsHelperResponse.value = computed(() =>store.getBetsHelper());
 				homeTeam.value = home;
 				awayTeam.value = away;
-			});
+            });
 		} catch (error) {}
 	};
 
-	const betsHelper = computed(() => {
+	const getGeneralInfo = computed(() => {
 		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
-		const { away, home, h2h } = betsHelperResponse.value;
+
+		const {h2h} = betsHelperResponse.value.value;
+		const getFinishedGames = h2h.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN")
+		const gameLength = getFinishedGames.length;
+		const getWinners = getFinishedGames.map(item => Object.values(item.teams).find(team => team.winner));
+		const getHomeWinnerLength = getWinners.filter(item => item?.id == homeTeam.value.id).length;
+		const getHomeWinnerPercentage = (getHomeWinnerLength * 100) / gameLength
+		const getAwayWinnerLength = getWinners.filter(item => item?.id == awayTeam.value.id).length;
+		const getAwayWinnerPercentage = (getAwayWinnerLength * 100) / gameLength
+		const getDrawLength = gameLength - (getHomeWinnerLength + getAwayWinnerLength)
+		const getDrawPercentage = (getDrawLength * 100) / gameLength
+		return {
+			gameLength,
+			matches: [
+				{
+					description: "Wins",
+					number: getHomeWinnerLength,
+					percentage: getHomeWinnerPercentage.toFixed(1)
+				},
+				{
+					description: "Draw",
+					number: getDrawLength,
+					percentage: getDrawPercentage.toFixed(1)
+				},
+				{
+					description: "Wins",
+					number: getAwayWinnerLength,
+					percentage: getAwayWinnerPercentage.toFixed(1)
+				},
+				
+				 
+			]
+	
+		}
+	})  
+
+	const betsHelper = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { away, home } = betsHelperResponse.value.value;
 		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
 		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
 		if(isDifferentCompetition){
@@ -261,6 +301,8 @@ export default function (fixture) {
 	return {
 		loadBetsHelper,
 		betsHelper,
-		extraInfo
+		getGeneralInfo,
+		extraInfo,
+		betsHelperResponse
 	};
 }

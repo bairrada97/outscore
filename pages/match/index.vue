@@ -14,7 +14,7 @@
 </template>
 
 <script>
-	import { reactive, toRefs, ref, computed, useFetch, useContext, onActivated, onUnmounted, onDeactivated, watch, onUpdated } from "@nuxtjs/composition-api";
+	import { reactive, toRefs, ref, computed, useFetch, useContext, onActivated, onMounted, onDeactivated, watch, onUpdated } from "@nuxtjs/composition-api";
 
 	import store from "@/store.js";
 	import axios from "axios";
@@ -46,6 +46,7 @@
 			const { query } = useContext();
 			const { selectedMatch, loadMatchById } = useMatchesById();
 			const getSelectedTab = computed(() => store.getSelectedTab());
+			const interval = ref(null);
 
 			const { fetch, fetchState } = useFetch(async () => {
 				await loadMatchById(parseInt(query.value.fixture));
@@ -59,6 +60,19 @@
 					fetch();
 				}
 			);
+
+			onMounted(() => {
+				fetch();
+			});
+
+			onDeactivated(() => {
+				clearInterval(interval.value);
+			});
+			onActivated(() => {
+				interval.value = setInterval(() => {
+					fetch();
+				}, 15000);
+			});
 
 			return {
 				selectedMatch,
