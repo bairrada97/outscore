@@ -5,11 +5,11 @@
 		<span class="cardGame__status" v-else>{{ game.fixture.status.short == "NS" ? getStartMatchTime(game.fixture.timestamp) : game.fixture.status.short }}</span>
 		<div class="cardGame__teamsContainer">
 			<div class="cardGame__team" :class="{ teamScored: game.teams.home.name == teamScored }">
-				<span class="cardGame__team__goal">{{ game.score.penalty.home ? game.score.penalty.home : game.score.extratime.home ? game.score.extratime.home : game.goals.home }}</span>
+				<span class="cardGame__team__goal">{{ game.score.penalty.home ? game.score.penalty.home : game.goals.home }}</span>
 				<span class="cardGame__team__name">{{ game.teams.home.name }}</span>
 			</div>
 			<div class="cardGame__team" :class="{ teamScored: game.teams.away.name == teamScored }">
-				<span class="cardGame__team__goal">{{ game.score.penalty.away ? game.score.penalty.away : game.score.extratime.away ? game.score.extratime.away : game.goals.away }}</span>
+				<span class="cardGame__team__goal">{{ game.score.penalty.away ? game.score.penalty.away : game.goals.away }}</span>
 				<span class="cardGame__team__name">{{ game.teams.away.name }}</span>
 			</div>
 		</div>
@@ -39,10 +39,10 @@
 				type: Object
 			},
 			type: {
-				type: String
+				type: String 
 			},
 			winCondition: {
-				type: [String, Number]
+				type: [String, Number] 
 			}
 		},
 		setup(props) {
@@ -50,7 +50,7 @@
 			const teamScored = ref("");
 			const hasScored = ref(false);
 			const isGameLive = () => {
-				return game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "HT";
+				return game.fixture.status.long != "Match Finished" && (game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "HT" || game.fixture.status.short == "ET" || game.fixture.status.short == "AET" || game.fixture.status.short == "PEN");
 			};
 
 			const getStartMatchTime = timestamp => {

@@ -1,5 +1,5 @@
 <template>
-	<div class="matchOverview">
+	<div class="matchOverview" v-if="matchDetail">
 		<div class="matchOverview__period" v-for="(periods, name) in reversePeriods" :key="name">
 			<h3 class="matchOverview__periodName" v-if="periods.period.includes('first') || periods.period.includes('second')">{{ periods.period }} Half</h3>
 			<h3 class="matchOverview__periodName" v-else>{{ periods.period }}</h3>
@@ -29,7 +29,7 @@
 		},
 		setup(props) {
 			const displayEvents = computed(() => {
-				return props.matchDetail?.events?.reduce((acc, event) => {
+				return props.matchDetail.events?.reduce((acc, event) => {
 					let homeTeam = computed(() => props.matchDetail.teams.home);
 					let awayTeam = computed(() => props.matchDetail.teams.away);
 					console.log("cenas");

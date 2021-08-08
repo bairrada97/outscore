@@ -1,9 +1,9 @@
 <template>
-	<div class="matchDetail" v-if="!fetchState.pending">
+	<div class="matchDetail">
 		<MatchInfo :match="selectedMatch" />
 
-		<MatchTabsWrapper v-if="selectedMatch">
-			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview'" :matchDetail="selectedMatch" /> </MatchTab>
+		<MatchTabsWrapper>
+			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview' && Object.keys(selectedMatch).length > 0" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Lineups"><MatchLineups v-if="getSelectedTab == 'Lineups'" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Stats"><MatchStatistics v-if="getSelectedTab == 'Stats'" :matchDetail="selectedMatch" /></MatchTab>
 			<MatchTab title="Bets Helper"><MatchBetsHelper v-if="getSelectedTab == 'Bets Helper'" :matchDetail="selectedMatch" /></MatchTab>
@@ -61,10 +61,7 @@
 				}
 			);
 
-			onMounted(() => {
-				fetch();
-			});
-
+			fetch();
 			onDeactivated(() => {
 				clearInterval(interval.value);
 			});
