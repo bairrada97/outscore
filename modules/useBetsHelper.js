@@ -23,7 +23,7 @@ export default function (fixture) {
 		} catch (error) {}
 	};
 
-	const getGeneralInfo = computed(() => {
+	const getBoardInfoH2H = computed(() => {
 		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
 
 		const {h2h} = betsHelperResponse.value.value;
@@ -31,32 +31,79 @@ export default function (fixture) {
 		const gameLength = getFinishedGames.length;
 		const getWinners = getFinishedGames.map(item => Object.values(item.teams).find(team => team.winner));
 		const getHomeWinnerLength = getWinners.filter(item => item?.id == homeTeam.value.id).length;
-		const getHomeWinnerPercentage = (getHomeWinnerLength * 100) / gameLength
 		const getAwayWinnerLength = getWinners.filter(item => item?.id == awayTeam.value.id).length;
-		const getAwayWinnerPercentage = (getAwayWinnerLength * 100) / gameLength
 		const getDrawLength = gameLength - (getHomeWinnerLength + getAwayWinnerLength)
-		const getDrawPercentage = (getDrawLength * 100) / gameLength
+	
 		return {
 			gameLength,
 			matches: [
 				{
 					description: "Wins",
 					number: getHomeWinnerLength,
-					percentage: getHomeWinnerPercentage.toFixed(1)
 				},
 				{
 					description: "Draw",
 					number: getDrawLength,
-					percentage: getDrawPercentage.toFixed(1)
 				},
 				{
 					description: "Wins",
 					number: getAwayWinnerLength,
-					percentage: getAwayWinnerPercentage.toFixed(1)
 				},
 				
 				 
 			]
+	
+		}
+	})  
+
+	const getBoardInfo = computed(() => {
+		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
+
+		const {home,away} = betsHelperResponse.value.value;
+		const getHomeFinishedGames = home.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN");
+		const getAwayFinishedGames = away.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN");
+
+		const getHomeWinnerLength = getHomeFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == homeTeam.value.id && team.winner)).filter(match => match.length).length
+		const getHomeLosesLength = getHomeFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == homeTeam.value.id && team.winner == false)).filter(match => match.length).length
+		const getHomeDrawsLength = home.length - (getHomeWinnerLength + getHomeLosesLength);
+		const getAwayWinnerLength = getAwayFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == awayTeam.value.id && team.winner)).filter(match => match.length).length
+		const getAwayLosesLength = getAwayFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == awayTeam.value.id && team.winner == false)).filter(match => match.length).length
+		const getAwayDrawsLength = away.length - (getAwayWinnerLength + getAwayLosesLength);
+
+		
+	
+	
+		return {
+			matches:{
+				home:[
+				{
+					description: "Wins",
+					number: getHomeWinnerLength,
+				},
+				{
+					description: "Draws",
+					number: getHomeDrawsLength,
+				},
+				{
+					description: "Loses",
+					number: getHomeLosesLength,
+				},
+				],
+				away:[
+				{
+					description: "Wins",
+					number: getAwayWinnerLength,
+				},
+				{
+					description: "Draws",
+					number: getAwayDrawsLength,
+				},
+				{
+					description: "Loses",
+					number: getAwayLosesLength,
+				}
+				]
+			}
 	
 		}
 	})  
@@ -301,7 +348,8 @@ export default function (fixture) {
 	return {
 		loadBetsHelper,
 		betsHelper,
-		getGeneralInfo,
+		getBoardInfo,
+		getBoardInfoH2H,
 		extraInfo,
 		betsHelperResponse
 	};
