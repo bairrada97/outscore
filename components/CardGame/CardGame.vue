@@ -39,10 +39,10 @@
 				type: Object
 			},
 			type: {
-				type: String 
+				type: String
 			},
 			winCondition: {
-				type: [String, Number] 
+				type: [String, Number]
 			}
 		},
 		setup(props) {
@@ -50,7 +50,7 @@
 			const teamScored = ref("");
 			const hasScored = ref(false);
 			const isGameLive = () => {
-				return game.fixture.status.long != "Match Finished" && (game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "HT" || game.fixture.status.short == "ET" || game.fixture.status.short == "AET" || game.fixture.status.short == "PEN");
+				return game.fixture.status.long != "Match Finished" && (game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "ET" || game.fixture.status.short == "AET" || game.fixture.status.short == "PEN");
 			};
 
 			const getStartMatchTime = timestamp => {

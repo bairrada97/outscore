@@ -36,18 +36,24 @@ export default function (fixture) {
 	
 		return {
 			gameLength,
-			matches: [
+			matches: [ 
 				{
 					description: "Wins",
 					number: getHomeWinnerLength,
+					color: "#212121",
+					background: "#E9E7E7"
 				},
 				{
 					description: "Draw",
 					number: getDrawLength,
+					color: "#fff",
+					background: "#939393"
 				},
 				{
 					description: "Wins",
 					number: getAwayWinnerLength,
+					color: "#fff",
+					background: "#212121"
 				},
 				
 				 
@@ -79,28 +85,40 @@ export default function (fixture) {
 				{
 					description: "Wins",
 					number: getHomeWinnerLength,
+					color: "#212121",
+					background: "#E9E7E7"
 				},
 				{
 					description: "Draws",
 					number: getHomeDrawsLength,
+					color: "#212121",
+					background: "#E9E7E7"		
 				},
 				{
 					description: "Loses",
 					number: getHomeLosesLength,
+					color: "#212121",
+					background: "#E9E7E7"
 				},
 				],
 				away:[
 				{
 					description: "Wins",
 					number: getAwayWinnerLength,
+					color: "#fff",
+					background: "#212121"
 				},
 				{
 					description: "Draws",
 					number: getAwayDrawsLength,
+					color: "#fff",
+					background: "#212121"
 				},
 				{
 					description: "Loses",
 					number: getAwayLosesLength,
+					color: "#fff",
+					background: "#212121"
 				}
 				]
 			}
@@ -117,6 +135,37 @@ export default function (fixture) {
 			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
 		}
 		return uniqueMatches?.reduce((acc, stats) => {
+			getGoals(acc, stats, 1.5);
+			getGoals(acc, stats, 2.5);
+			getGoals(acc, stats, 3.5);
+			getGoals(acc, stats, 4.5);
+			getGoals(acc, stats, 5.5);
+			getBothTeamsToScore(acc, stats);
+			getCleanSheet(acc, stats);
+			getFirstTeamToScore(acc, stats);
+			getTotalCorners(acc, stats, 7.5);
+			getTotalCorners(acc, stats, 8.5);
+			getTotalCorners(acc, stats, 9.5);
+			getTotalCorners(acc, stats, 10.5);
+			getTotalCorners(acc, stats, 11.5);
+			getTotalCorners(acc, stats, 12.5);
+			getTotalCards(acc, stats, 2.5);
+			getTotalCards(acc, stats, 3.5);
+			getTotalCards(acc, stats, 4.5);
+			getTotalCards(acc, stats, 5.5);
+			getTotalCards(acc, stats, 6.5);
+			getTotalCards(acc, stats, 7.5);
+			getDrawNoBet(acc, stats);
+			return acc;
+		}, {});
+	});
+
+	const betsHelperH2H = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { h2h } = betsHelperResponse.value.value;
+		
+	
+		return h2h?.reduce((acc, stats) => {
 			getGoals(acc, stats, 1.5);
 			getGoals(acc, stats, 2.5);
 			getGoals(acc, stats, 3.5);
@@ -348,9 +397,10 @@ export default function (fixture) {
 	return {
 		loadBetsHelper,
 		betsHelper,
+		betsHelperH2H,
 		getBoardInfo,
 		getBoardInfoH2H,
 		extraInfo,
-		betsHelperResponse
+		betsHelperResponse,
 	};
 }

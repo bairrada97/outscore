@@ -7,14 +7,14 @@
 		</header>
 		<div class="cardBetsBoard__content" v-if="type == 'H2H'">
 			<div class="cardBetsBoard__info" v-for="(boardInfo, index) of getBoardInfo.matches" :key="index">
-				<span class="cardBetsBoard__number">{{ boardInfo.number }}</span>
+				<span class="cardBetsBoard__number" :style="{ color: boardInfo.color, background: boardInfo.background }">{{ boardInfo.number }}</span>
 				<span class="cardBetsBoard__description">{{ boardInfo.description }}</span>
 			</div>
 		</div>
 		<div class="cardBetsBoard__content" v-if="type == 'All'">
 			<div class="cardBetsBoard__container" v-for="(boardInfo, index) of getBoardInfo.matches" :key="index">
 				<div class="cardBetsBoard__info" v-for="(team, index) of boardInfo" :key="index">
-					<span class="cardBetsBoard__number">{{ team.number }}</span>
+					<span class="cardBetsBoard__number" :style="{ color: team.color, background: team.background }">{{ team.number }}</span>
 					<span class="cardBetsBoard__description">{{ team.description }}</span>
 				</div>
 			</div>
@@ -68,13 +68,14 @@
 			display: grid;
 			grid-template-columns: 1fr 1fr 1fr;
 			gap: 0 8px;
-			text-align: center;
 		}
 
 		&__info {
 			display: grid;
 			grid-template-columns: 1fr;
 			gap: 0 8px;
+			text-align: center;
+			min-width: 38px;
 		}
 
 		&__number {
