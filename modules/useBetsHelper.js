@@ -506,23 +506,52 @@ export default function (fixture) {
 		const divideTime = time.split("-")
 		const timeInGame = stats.events.filter(events => events.time.elapsed >= +divideTime[0] &&  events.time.elapsed <= +divideTime[1] && events.type =="Goal");
 
-		acc["Is there a goal between"] = acc["Is there a goal between"] || {};
-		acc["Is there a goal between"][`${time}`] = acc["Is there a goal between"][`${time}`] || {};
-		acc["Is there a goal between"][`${time}`].home = acc["Is there a goal between"][`${time}`].home || {};
-		acc["Is there a goal between"][`${time}`].away = acc["Is there a goal between"][`${time}`].away || {};
-		acc["Is there a goal between"][`${time}`].home.name = homeTeam.value.name;
-		acc["Is there a goal between"][`${time}`].away.name = awayTeam.value.name;
-		acc["Is there a goal between"][`${time}`].home.value = acc["Is there a goal between"][`${time}`].home.value || 0;
-		acc["Is there a goal between"][`${time}`].away.value = acc["Is there a goal between"][`${time}`].away.value || 0;
+		acc["Scored Between"] = acc["Scored Between"] || {};
+		acc["Scored Between"][`${time}`] = acc["Scored Between"][`${time}`] || {};
+		acc["Scored Between"][`${time}`].home = acc["Scored Between"][`${time}`].home || {};
+		acc["Scored Between"][`${time}`].away = acc["Scored Between"][`${time}`].away || {};
+		acc["Scored Between"][`${time}`].home.name = homeTeam.value.name;
+		acc["Scored Between"][`${time}`].away.name = awayTeam.value.name;
+		acc["Scored Between"][`${time}`].home.value = acc["Scored Between"][`${time}`].home.value || 0;
+		acc["Scored Between"][`${time}`].away.value = acc["Scored Between"][`${time}`].away.value || 0;
 
-		if (acc["Is there a goal between"][`${time}`].home.name == homeTeamSide?.name) {
+		if (acc["Scored Between"][`${time}`].home.name == homeTeamSide?.name) {
 			if (timeInGame.length) {
-				acc["Is there a goal between"][`${time}`].home.value += timeInGame.length;
+				acc["Scored Between"][`${time}`].home.value += timeInGame.length;
 			}
 		}
-		if (acc["Is there a goal between"][`${time}`].away.name == awayTeamSide?.name) {
+		if (acc["Scored Between"][`${time}`].away.name == awayTeamSide?.name) {
 			if (timeInGame.length) {
-				acc["Is there a goal between"][`${time}`].away.value += timeInGame.length;
+				acc["Scored Between"][`${time}`].away.value += timeInGame.length;
+			}
+		}
+	}
+
+	const toWinToNil =(acc,stats) => {
+		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
+		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
+		let isThereNoGoal = Object.values(stats.goals).find(goal => !!goal);
+
+		
+
+
+		acc["goals"] = acc["goals"] || {};
+		acc["goals"][`+${value}`] = acc["goals"][`+${value}`] || {};
+		acc["goals"][`+${value}`].home = acc["goals"][`+${value}`].home || {};
+		acc["goals"][`+${value}`].away = acc["goals"][`+${value}`].away || {};
+		acc["goals"][`+${value}`].home.name = homeTeam.value.name;
+		acc["goals"][`+${value}`].away.name = awayTeam.value.name;
+		acc["goals"][`+${value}`].home.value = acc["goals"][`+${value}`].home.value || 0;
+		acc["goals"][`+${value}`].away.value = acc["goals"][`+${value}`].away.value || 0;
+
+		if (acc["goals"][`+${value}`].home.name == homeTeamSide?.name) {
+			if (goalsInGame > value) {
+				acc["goals"][`+${value}`].home.value++;
+			}
+		}
+		if (acc["goals"][`+${value}`].away.name == awayTeamSide?.name) {
+			if (goalsInGame > value) {
+				acc["goals"][`+${value}`].away.value++;
 			}
 		}
 	}

@@ -32,13 +32,13 @@
 		setup(props) {
 			const sumOfStatistics = Object.values(props.statistics).reduce((a, b) => parseInt(a.value) + parseInt(b.value));
 			const convertStatsInWidth = stat => {
-				if (props.lastGamesLength) { 
+				if (props.lastGamesLength) {
 					return stat ? (parseInt(stat) * 100) / props.lastGamesLength : 0;
 				} else {
 					return stat ? (parseInt(stat) * 100) / sumOfStatistics : 0;
 				}
 			};
- 
+
 			return {
 				convertStatsInWidth
 			};
@@ -76,7 +76,7 @@
 				direction: ltr;
 			}
 		}
- 
+
 		&__bar {
 			width: 100%;
 			background-color: #e9e7e7;
