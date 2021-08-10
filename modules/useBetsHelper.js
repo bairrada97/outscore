@@ -126,7 +126,9 @@ export default function (fixture) {
 		}
 	})  
 
-	const betsHelper = computed(() => {
+
+
+	const betsHelperFulltime = computed(() => {
 		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
 		const { away, home } = betsHelperResponse.value.value;
 		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
@@ -135,12 +137,12 @@ export default function (fixture) {
 			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
 		}
 		return uniqueMatches?.reduce((acc, stats) => {
-			getGoals(acc, stats, 1.5);
-			getGoals(acc, stats, 2.5);
-			getGoals(acc, stats, 3.5);
-			getGoals(acc, stats, 4.5);
-			getGoals(acc, stats, 5.5);
-			getBothTeamsToScore(acc, stats);
+			getGoals(acc, stats, 1.5, "fulltime");
+			getGoals(acc, stats, 2.5, "fulltime");
+			getGoals(acc, stats, 3.5, "fulltime");
+			getGoals(acc, stats, 4.5, "fulltime");
+			getGoals(acc, stats, 5.5, "fulltime");
+			getBothTeamsToScore(acc, stats, "fulltime");
 			getCleanSheet(acc, stats);
 			getFirstTeamToScore(acc, stats);
 			getTotalCorners(acc, stats, 7.5);
@@ -160,18 +162,64 @@ export default function (fixture) {
 		}, {});
 	});
 
-	const betsHelperH2H = computed(() => {
+	const betsHelperFirstHalf = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { away, home } = betsHelperResponse.value.value;
+		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
+		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
+		if(isDifferentCompetition){
+			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
+		}
+		return uniqueMatches?.reduce((acc, stats) => {
+			getGoals(acc, stats, 0.5, "firsthalf");
+			getGoals(acc, stats, 1.5, "firsthalf");
+			getGoals(acc, stats, 2.5, "firsthalf");
+			getGoals(acc, stats, 3.5, "firsthalf");
+			getBothTeamsToScore(acc, stats, "firsthalf");
+			getGoalsByTime(acc,stats, "0-15")
+			getGoalsByTime(acc,stats, "16-30");
+			getGoalsByTime(acc,stats, "31-45");
+			return acc;
+		}, {});
+	});
+
+	
+	const betsHelperSecondHalf = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { away, home } = betsHelperResponse.value.value;
+		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
+		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
+		if(isDifferentCompetition){
+			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
+		}
+		return uniqueMatches?.reduce((acc, stats) => {
+			getGoals(acc, stats, 0.5, "secondhalf");
+			getGoals(acc, stats, 1.5, "secondhalf");
+			getGoals(acc, stats, 2.5, "secondhalf");
+			getGoals(acc, stats, 3.5, "secondhalf");
+			getBothTeamsToScore(acc, stats, "secondhalf");
+			getGoalsByTime(acc,stats, "46-60")
+			getGoalsByTime(acc,stats, "61-75");
+			getGoalsByTime(acc,stats, "75-90");
+			return acc;
+		}, {});
+	});
+
+
+
+
+	const betsHelperH2HFulltime = computed(() => {
 		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
 		const { h2h } = betsHelperResponse.value.value;
 		
 	
 		return h2h?.reduce((acc, stats) => {
-			getGoals(acc, stats, 1.5);
-			getGoals(acc, stats, 2.5);
-			getGoals(acc, stats, 3.5);
-			getGoals(acc, stats, 4.5);
-			getGoals(acc, stats, 5.5);
-			getBothTeamsToScore(acc, stats);
+			getGoals(acc, stats, 1.5, "fulltime");
+			getGoals(acc, stats, 2.5, "fulltime");
+			getGoals(acc, stats, 3.5, "fulltime");
+			getGoals(acc, stats, 4.5, "fulltime");
+			getGoals(acc, stats, 5.5, "fulltime");
+			getBothTeamsToScore(acc, stats, "fulltime");
 			getCleanSheet(acc, stats);
 			getFirstTeamToScore(acc, stats);
 			getTotalCorners(acc, stats, 7.5);
@@ -191,10 +239,55 @@ export default function (fixture) {
 		}, {});
 	});
 
-	const getGoals = (acc, stats, value) => {
+	const betsHelperH2HFirstHalf = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { h2h } = betsHelperResponse.value.value;
+		
+	
+		return h2h?.reduce((acc, stats) => {
+			getGoals(acc, stats, 1.5, "firsthalf");
+			getGoals(acc, stats, 2.5, "firsthalf");
+			getGoals(acc, stats, 3.5, "firsthalf");
+			getGoals(acc, stats, 4.5, "firsthalf");
+			getGoals(acc, stats, 5.5, "firsthalf");
+			getBothTeamsToScore(acc, stats, "firsthalf");
+			getGoalsByTime(acc,stats, "0-15")
+			getGoalsByTime(acc,stats, "16-30");
+			getGoalsByTime(acc,stats, "31-45");
+			
+			return acc;
+		}, {});
+	});
+
+	const betsHelperH2HSecondHalf = computed(() => {
+		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
+		const { h2h } = betsHelperResponse.value.value;
+		
+	
+		return h2h?.reduce((acc, stats) => {
+			getGoals(acc, stats, 1.5, "secondhalf");
+			getGoals(acc, stats, 2.5, "secondhalf");
+			getGoals(acc, stats, 3.5, "secondhalf");
+			getGoals(acc, stats, 4.5, "secondhalf");
+			getGoals(acc, stats, 5.5, "secondhalf");
+			getBothTeamsToScore(acc, stats, "secondhalf");
+			getGoalsByTime(acc,stats, "46-60")
+			getGoalsByTime(acc,stats, "61-75");
+			getGoalsByTime(acc,stats, "75-90");
+		
+			return acc;
+		}, {});
+	});
+
+	const getGoals = (acc, stats, value, time) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
-		const goalsInGame = stats.goals.home + stats.goals.away;
+		let goalsInGame;
+
+		if(time == "fulltime") goalsInGame = stats.goals.home + stats.goals.away;
+		if(time == "firsthalf") goalsInGame = stats.score.halftime.home +  stats.score.halftime.away;
+		if(time == "secondhalf") goalsInGame = ( stats.score.fulltime.home +  stats.score.fulltime.away) - stats.score.halftime.home +  stats.score.halftime.away;
+
 
 		acc["goals"] = acc["goals"] || {};
 		acc["goals"][`+${value}`] = acc["goals"][`+${value}`] || {};
@@ -217,11 +310,27 @@ export default function (fixture) {
 		}
 	};
 
-	const getBothTeamsToScore = (acc, stats) => {
+	const getBothTeamsToScore = (acc, stats, time) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
-		const goalsHome = stats.goals.home;
-		const goalsAway = stats.goals.away;
+		let goalsHome;
+		let goalsAway;
+		let isBothTeamsToScore;
+		if(time =="fulltime"){
+			goalsHome = stats.goals.home;
+			goalsAway = stats.goals.away;		
+		}
+
+		if(time == "firsthalf"){
+			goalsHome = stats.score.halftime.home;
+			goalsAway = stats.score.halftime.away;
+		}
+
+		if(time == "secondhalf"){
+			goalsHome = stats.goals.home - stats.score.halftime.home;
+			goalsAway = stats.goals.away- stats.score.halftime.away;
+		}
+	
 
 		acc["Both Teams To Score"] = acc["Both Teams To Score"] || {};
 		acc["Both Teams To Score"][`yes`] = acc["Both Teams To Score"][`yes`] || {};
@@ -232,15 +341,12 @@ export default function (fixture) {
 		acc["Both Teams To Score"][`yes`].home.value = acc["Both Teams To Score"][`yes`].home.value || 0;
 		acc["Both Teams To Score"][`yes`].away.value = acc["Both Teams To Score"][`yes`].away.value || 0;
 
+		isBothTeamsToScore = goalsHome > 0 && goalsAway > 0;
 		if (acc["Both Teams To Score"][`yes`].home.name == homeTeamSide?.name) {
-			if (goalsHome > 0 && goalsAway > 0) {
-				acc["Both Teams To Score"][`yes`].home.value++;
-			}
+			if (isBothTeamsToScore) acc["Both Teams To Score"][`yes`].home.value++;
 		}
 		if (acc["Both Teams To Score"][`yes`].away.name == awayTeamSide?.name) {
-			if (goalsHome > 0 && goalsAway > 0) {
-				acc["Both Teams To Score"][`yes`].away.value++;
-			}
+			if (isBothTeamsToScore) acc["Both Teams To Score"][`yes`].away.value++;
 		}
 	};
 
@@ -394,10 +500,41 @@ export default function (fixture) {
 		
 	}; 
 
+	const getGoalsByTime = (acc, stats, time) => {
+		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
+		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
+		const divideTime = time.split("-")
+		const timeInGame = stats.events.filter(events => events.time.elapsed >= +divideTime[0] &&  events.time.elapsed <= +divideTime[1] && events.type =="Goal");
+
+		acc["Is there a goal between"] = acc["Is there a goal between"] || {};
+		acc["Is there a goal between"][`${time}`] = acc["Is there a goal between"][`${time}`] || {};
+		acc["Is there a goal between"][`${time}`].home = acc["Is there a goal between"][`${time}`].home || {};
+		acc["Is there a goal between"][`${time}`].away = acc["Is there a goal between"][`${time}`].away || {};
+		acc["Is there a goal between"][`${time}`].home.name = homeTeam.value.name;
+		acc["Is there a goal between"][`${time}`].away.name = awayTeam.value.name;
+		acc["Is there a goal between"][`${time}`].home.value = acc["Is there a goal between"][`${time}`].home.value || 0;
+		acc["Is there a goal between"][`${time}`].away.value = acc["Is there a goal between"][`${time}`].away.value || 0;
+
+		if (acc["Is there a goal between"][`${time}`].home.name == homeTeamSide?.name) {
+			if (timeInGame.length) {
+				acc["Is there a goal between"][`${time}`].home.value += timeInGame.length;
+			}
+		}
+		if (acc["Is there a goal between"][`${time}`].away.name == awayTeamSide?.name) {
+			if (timeInGame.length) {
+				acc["Is there a goal between"][`${time}`].away.value += timeInGame.length;
+			}
+		}
+	}
+
 	return {
 		loadBetsHelper,
-		betsHelper,
-		betsHelperH2H,
+		betsHelperFulltime,
+		betsHelperFirstHalf,
+		betsHelperSecondHalf,
+		betsHelperH2HFulltime,
+		betsHelperH2HFirstHalf,
+		betsHelperH2HSecondHalf,
 		getBoardInfo,
 		getBoardInfoH2H,
 		extraInfo,

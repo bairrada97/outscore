@@ -7,7 +7,7 @@
 					<CardBetsHelper name="Full Time" :isOpen="getOpenTeamLineup('Full Time') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Full Time')">
 							<!-- <span>{{ extraInfo }}</span> -->
-							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelper" :key="index">
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperFulltime" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
 									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
@@ -17,10 +17,30 @@
 					</CardBetsHelper>
 				</div>
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('First Half')" v-if="getSelectedFilter == 'Last 5 games'">
-					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''"> </CardBetsHelper>
+					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''">
+						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('First Half')">
+							<!-- <span>{{ extraInfo }}</span> -->
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperFirstHalf" :key="index">
+								<h3 class="matchBetsHelper__title">{{ index }}</h3>
+								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+								</div>
+							</li>
+						</ul>
+					</CardBetsHelper>
 				</div>
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Second Half')" v-if="getSelectedFilter == 'Last 5 games'">
-					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''"> </CardBetsHelper>
+					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''">
+						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Second Half')">
+							<!-- <span>{{ extraInfo }}</span> -->
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperSecondHalf" :key="index">
+								<h3 class="matchBetsHelper__title">{{ index }}</h3>
+								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+								</div>
+							</li>
+						</ul>
+					</CardBetsHelper>
 				</div>
 			</Filters>
 			<Filters title="H2H">
@@ -29,7 +49,7 @@
 					<CardBetsHelper name="Full Time" :isOpen="getOpenTeamLineup('Full Time') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Full Time')">
 							<!-- <span>{{ extraInfo }}</span> -->
-							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2H" :key="index">
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HFulltime" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
 									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
@@ -39,10 +59,30 @@
 					</CardBetsHelper>
 				</div>
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('First Half')" v-if="getSelectedFilter == 'H2H'">
-					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''"> </CardBetsHelper>
+					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''">
+						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('First Half')">
+							<!-- <span>{{ extraInfo }}</span> -->
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HFirstHalf" :key="index">
+								<h3 class="matchBetsHelper__title">{{ index }}</h3>
+								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+								</div>
+							</li>
+						</ul>
+					</CardBetsHelper>
 				</div>
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Second Half')" v-if="getSelectedFilter == 'H2H'">
-					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''"> </CardBetsHelper>
+					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''">
+						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Second Half')">
+							<!-- <span>{{ extraInfo }}</span> -->
+							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HSecondHalf" :key="index">
+								<h3 class="matchBetsHelper__title">{{ index }}</h3>
+								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+								</div>
+							</li>
+						</ul>
+					</CardBetsHelper>
 				</div>
 			</Filters>
 			<Filters title="Facts"> </Filters>
@@ -74,7 +114,7 @@
 			}
 		},
 		setup(props) {
-			const { loadBetsHelper, betsHelper, betsHelperH2H, getBoardInfo, getBoardInfoH2H, extraInfo, betsHelperResponse } = useBetsHelper(props.matchDetail);
+			const { loadBetsHelper, betsHelperFulltime, betsHelperFirstHalf, betsHelperSecondHalf, betsHelperH2HFulltime, betsHelperH2HFirstHalf, betsHelperH2HSecondHalf, getBoardInfo, getBoardInfoH2H, extraInfo, betsHelperResponse } = useBetsHelper(props.matchDetail);
 			const { home, away } = props.matchDetail.teams;
 			const lastGamesLength = 5;
 			const isOpen = ref([]);
@@ -106,8 +146,12 @@
 			return {
 				lastGamesLength,
 				fetchState,
-				betsHelper,
-				betsHelperH2H,
+				betsHelperFulltime,
+				betsHelperFirstHalf,
+				betsHelperSecondHalf,
+				betsHelperH2HFulltime,
+				betsHelperH2HFirstHalf,
+				betsHelperH2HSecondHalf,
 				extraInfo,
 				openTeamLineup,
 				getOpenTeamLineup,
