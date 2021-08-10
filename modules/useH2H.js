@@ -22,10 +22,11 @@ export default function () {
                     const hasAwayTeamH2HUpdated = !awayTeamH2H.value.cacheDate || responses[0].data.cacheDate != awayTeamH2H.value.cacheDate;
                     const hasHomeTeamH2HUpdated = !homeTeamH2H.value.cacheDate || responses[1].data.cacheDate != homeTeamH2H.value.cacheDate;
                     const hasH2HUpdated = !h2h.value.cacheDate || responses[2].data.cacheDate != h2h.value.cacheDate;
+                    const gameFinished = ["FT","AET","PEN"]
 
-                    if (hasAwayTeamH2HUpdated) store.setAwayTeamH2H(responses[0].data.response);
-                    if (hasHomeTeamH2HUpdated) store.setHomeTeamH2H(responses[1].data.response);
-                    if (hasH2HUpdated) store.setH2H(responses[2].data.response.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN"));
+                    if (hasAwayTeamH2HUpdated) store.setAwayTeamH2H(responses[0].data.response.filter(item => gameFinished.includes(item.fixture.status.short)));
+                    if (hasHomeTeamH2HUpdated) store.setHomeTeamH2H(responses[1].data.response.filter(item => gameFinished.includes(item.fixture.status.short)));
+                    if (hasH2HUpdated) store.setH2H(responses[2].data.response.filter(item => gameFinished.includes(item.fixture.status.short)));
                 })
                 .then(() => {
                     awayTeamH2H.value = store.getAwayTeamH2H();
