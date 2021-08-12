@@ -5,18 +5,28 @@ import axios from "axios";
 export default function () {
     const standings = ref(null);
 
-    const loadStandings = async (leagueId, seasonId) => {
+    const loadStandings = async (selectedMatch, seasonId) => {
+         
         try {
             await axios
-                .get(`https://api-football-v3.herokuapp.com/api/v3/standings?league=${leagueId}&season=${seasonId}`)
+                .get(`https://api-football-v3.herokuapp.com/api/v3/standings?league=${selectedMatch.league.id}&season=${seasonId}`)
                 .then(response => {
-                    standings.value = store.getStandings();
-                    const hasDataUpdated = !standings.value.cacheDate || response.data.cacheDate != standings.value.cacheDate;
-                    if (hasDataUpdated) store.setStandings(response.data.response[0].league);
+                    const {away, home} = selectedMatch.teams;
+                     standings.value = response.data.response[0].league.standings;
+                    if( standings.value.length <= 1) {
+                          standings.value = response.data.response[0].league.standings.shift();
+                         store.setStandings(standings.value);
+                    }else{
+                        const getGroup =  standings.value?.filter(group =>group.find((item) => item.team.id == away.id || item.team.id == home.id));
+                        store.setStandings(getGroup);
+                    }
+                    
+                    const getTeams =  standings.value.flat()?.filter(item => item.team.id == away.id || item.team.id == home.id);
+                    store.setTeamsFromStandings(getTeams)
+               
+                  
                 })
-                .then(() => {
-                    standings.value = store.getStandings();
-                });
+              
         } catch (error) {}
     };
 

@@ -7,20 +7,31 @@
 				<CardEvent v-for="(event, index) in periods.events" :key="index" :event="event" />
 			</div>
 		</div>
-		<CardVenue :venue="displayVenue" />
+		<!--
+		<LazyHydrate when-visible>
+			<CardTeamsForm :teamsForm="displayTeamsForm" />
+		</LazyHydrate>
+		-->
+		<LazyHydrate when-visible>
+			<CardVenue :venue="displayVenue" />
+		</LazyHydrate>
 	</div>
 </template>
 
 <script>
 	import { reactive, watch, computed, ref, onMounted, onBeforeUnmount } from "@nuxtjs/composition-api";
-	import useCalendar from "../../modules/useCalendar";
+	import LazyHydrate from "vue-lazy-hydration";
 	import store from "@/store.js";
 	import CardEvent from "@/components/CardEvent/CardEvent.vue";
+	import CardTeamsForm from "@/components/CardTeamsForm/CardTeamsForm.vue";
 	import CardVenue from "@/components/CardVenue/CardVenue.vue";
 
 	export default {
 		components: {
-			CardEvent
+			LazyHydrate,
+			CardEvent,
+			CardTeamsForm,
+			CardVenue
 		},
 		props: {
 			matchDetail: {
@@ -28,11 +39,13 @@
 			}
 		},
 		setup(props) {
+			const getTeamsFromStandings = computed(() => store.getTeamsFromStandings());
+			const displayTeamsForm = computed(() => getTeamsFromStandings?.value?.map(teams => teams.form));
+
 			const displayEvents = computed(() => {
 				return props.matchDetail.events?.reduce((acc, event) => {
 					let homeTeam = computed(() => props.matchDetail.teams.home);
-					let awayTeam = computed(() => props.matchDetail.teams.away);
-					console.log("cenas");
+
 					if (event.time.elapsed <= 45) acc.first = acc.first || new Set();
 					if (event.time.elapsed > 45 && event.time.elapsed <= 90) acc.second = acc.second || new Set();
 					if (event.time.elapsed > 90 && event.time.elapsed <= 120 && event.comments !== "Penalty Shootout") acc.overtime = acc.overtime || new Set();
@@ -91,7 +104,8 @@
 			return {
 				displayEvents,
 				reversePeriods,
-				displayVenue
+				displayVenue,
+				displayTeamsForm
 			};
 		}
 	};

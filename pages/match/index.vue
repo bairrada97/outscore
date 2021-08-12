@@ -3,7 +3,7 @@
 		<MatchInfo :match="selectedMatch" />
 
 		<MatchTabsWrapper>
-			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview' && Object.keys(selectedMatch).length > 0" :matchDetail="selectedMatch" /> </MatchTab>
+			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview' && Object.keys(selectedMatch).length > 0 && standings.length > 0" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Lineups"><MatchLineups v-if="getSelectedTab == 'Lineups'" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Stats"><MatchStatistics v-if="getSelectedTab == 'Stats'" :matchDetail="selectedMatch" /></MatchTab>
 			<MatchTab title="Bets Helper"><MatchBetsHelper v-if="getSelectedTab == 'Bets Helper'" :matchDetail="selectedMatch" /></MatchTab>
@@ -19,6 +19,7 @@
 	import store from "@/store.js";
 	import axios from "axios";
 	import useMatchesById from "@/modules/useMatchesById";
+	import useStandings from "@/modules/useStandings";
 
 	import MatchTabsWrapper from "@/components/MatchTabsWrapper/MatchTabsWrapper.vue";
 	import MatchTab from "@/components/MatchTab/MatchTab.vue";
@@ -42,16 +43,19 @@
 			MatchStandings,
 			MatchLineups
 		},
+
 		setup() {
 			const { query } = useContext();
 			const { selectedMatch, loadMatchById } = useMatchesById();
+			const { loadStandings } = useStandings();
 			const getSelectedTab = computed(() => store.getSelectedTab());
+			const standings = computed(() => store.getStandings());
 			const interval = ref(null);
 
 			const { fetch, fetchState } = useFetch(async () => {
 				await loadMatchById(parseInt(query.value.fixture));
+				await loadStandings(selectedMatch.value, selectedMatch.value.league.season);
 			});
-
 			watch(
 				() => parseInt(query.value.fixture),
 				(newValue, prevValue) => {
@@ -65,6 +69,7 @@
 			onDeactivated(() => {
 				clearInterval(interval.value);
 			});
+
 			onActivated(() => {
 				interval.value = setInterval(() => {
 					fetch();
@@ -74,13 +79,11 @@
 			return {
 				selectedMatch,
 				fetchState,
-				getSelectedTab
+				getSelectedTab,
+				standings
 			};
 		}
 	};
 </script>
 
-<style lang="scss">
-	.matchDetail {
-	}
-</style>
+<style lang="scss"></style>

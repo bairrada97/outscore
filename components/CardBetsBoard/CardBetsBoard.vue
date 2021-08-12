@@ -1,9 +1,16 @@
 <template>
 	<div class="cardBetsBoard">
 		<header>
-			<img width="32" height="32" :src="matchDetail.teams.home.logo" alt="" />
+			<div>
+				<img width="32" height="32" :src="matchDetail.teams.home.logo" alt="" />
+				<span class="cardBetsBoard__teamRank">({{ teamRanks[0] }}º)</span>
+			</div>
+
 			<span>{{ title }}</span>
-			<img width="32" height="32" :src="matchDetail.teams.away.logo" alt="" />
+			<div>
+				<span class="cardBetsBoard__teamRank">({{ teamRanks[1] }}º)</span>
+				<img width="32" height="32" :src="matchDetail.teams.away.logo" alt="" />
+			</div>
 		</header>
 		<div class="cardBetsBoard__content" v-if="type == 'H2H'">
 			<div class="cardBetsBoard__info" v-for="(boardInfo, index) of getBoardInfo.matches" :key="index">
@@ -42,7 +49,10 @@
 			}
 		},
 		setup(props) {
-			return {};
+			const getTeamsFromStandings = computed(() => store.getTeamsFromStandings());
+			const teamRanks = computed(() => getTeamsFromStandings.value.map(team => team.rank));
+
+			return { teamRanks };
 		}
 	};
 </script>
@@ -92,6 +102,10 @@
 
 		&__description {
 			font-weight: 400;
+			font-size: 12px;
+		}
+
+		&__teamRank {
 			font-size: 12px;
 		}
 	}

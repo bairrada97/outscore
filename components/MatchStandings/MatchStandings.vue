@@ -1,16 +1,19 @@
 <template>
 	<div class="matchStandings">
-		<div class="matchStandings__labels">
-			<div>#</div>
-			<div class="matchStandings__labels--team">Team</div>
-			<span>P</span>
-			<span>W</span>
-			<span>D</span>
-			<span>L</span>
-			<div>Pts</div>
-		</div>
-		<div class="matchStandings__container" v-if="getTeamStandings">
-			<CardStandings v-for="standing in getTeamStandings" :key="standing.team.id" :standing="standing" :color="getColorAndDescription(standing)" />
+		<LazyHydrate when-visible>
+			<div class="matchStandings__labels">
+				<div>#</div>
+				<div class="matchStandings__labels--team">Team</div>
+				<span>P</span>
+				<span>W</span>
+				<span>D</span>
+				<span>L</span>
+				<div>Pts</div>
+			</div>
+		</LazyHydrate>
+
+		<div class="matchStandings__container" v-if="standings">
+			<CardStandings v-for="standing in standings" :key="standing.team.id" :standing="standing" :color="getColorAndDescription(standing)" />
 		</div>
 
 		<div class="matchStandings__colorsDescriptionContainer" v-if="addColorsToDescription">
@@ -28,9 +31,11 @@
 	import store from "@/store.js";
 	import CardStats from "@/components/CardStats/CardStats.vue";
 	import CardStandings from "@/components/CardStandings/CardStandings.vue";
+	import LazyHydrate from "vue-lazy-hydration";
 
 	export default {
 		components: {
+			LazyHydrate,
 			CardStats,
 			CardStandings
 		},
@@ -40,9 +45,11 @@
 			}
 		},
 		setup(props) {
-			const { loadStandings, standings } = useStandings();
-			const getTeamStandings = computed(() => standings.value?.standings?.find(standing => standing?.find(item => item.team.id == props.matchDetail.teams.home.id || item.team.id == props.matchDetail.teams.away.id)));
-			const filterTeamDescription = computed(() => new Set(getTeamStandings?.value?.map(item => item.description)));
+			const { loadStandings } = useStandings();
+			const standings = computed(() => store.getStandings());
+			const getTeamsFromStandings = computed(() => store.getTeamsFromStandings());
+			const filterTeamDescription = computed(() => new Set(standings?.value?.map(item => item.description)));
+
 			const promotionColors = ["#187C56", "#7CCC15", "#3CDBD3"];
 			const relegationColors = ["#D16666", "#FF8552", "#E3DBDB"];
 			const descriptionSubtitle = ref([]);
@@ -50,6 +57,7 @@
 			let colorRelegationIndex = ref(0);
 
 			const addColorsToDescription = computed(() => {
+				colorPromotionIndex.value = 0;
 				return Array.from(filterTeamDescription?.value)?.reduce((acc, description, index) => {
 					if (!description) return acc;
 					if (description.includes("Relegation")) {
@@ -76,13 +84,14 @@
 			};
 
 			const { fetch, fetchState } = useFetch(async () => {
-				await loadStandings(props.matchDetail.league.id, props.matchDetail.league.season);
+				await loadStandings(props.matchDetail, props.matchDetail.league.season);
 			});
 
 			fetch();
 
 			return {
-				getTeamStandings,
+				standings,
+				getTeamsFromStandings,
 				descriptionSubtitle,
 				getColorAndDescription,
 				fetchState,

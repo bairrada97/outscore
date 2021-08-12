@@ -1,30 +1,32 @@
 <template>
 	<div>
-		<Calendar />
+		<LazyHydrate when-idle>
+			<Calendar />
+		</LazyHydrate>
 		<CalendarBar />
+
 		<div>
 			<h2 class="leagueTypes">National Leagues</h2>
 			<div @click="openGame(countryName)" v-for="(countryName, key) in getLeagues" :key="key">
-				<CardCountry :country="countryName" :name="key" :isOpen="getOpenGame(countryName) ? 'isOpen' : ''">
-					<div class="align--full" v-if="getOpenGame(countryName)">
-						<div v-for="(competition, key) in countryName.league" :key="key">
-							<CardLeague :name="key" :league="competition" />
-							<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
+				<LazyHydrate when-visible>
+					<CardCountry :country="countryName" :name="key" :isOpen="getOpenGame(countryName) ? 'isOpen' : ''">
+						<div class="align--full" v-if="getOpenGame(countryName)">
+							<div v-for="(competition, key) in countryName.league" :key="key">
+								<CardLeague :name="key" :league="competition" />
+								<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
+							</div>
 						</div>
-					</div>
-				</CardCountry>
+					</CardCountry>
+				</LazyHydrate>
 			</div>
 		</div>
-		<!-- <a class="clearCacheButton" target="_blank" href="https://api-football-v3.herokuapp.com/api/v3/fixtures/?clearCache=all">Clear Cache</a> -->
 	</div>
 </template>
 
 <script>
-	import { defineComponent, onDeactivated, toRefs, ref, onMounted, useFetch, onActivated, onUnmounted, computed, watch } from "@nuxtjs/composition-api";
+	import { defineComponent, onDeactivated, ref, onMounted, useFetch, onActivated, computed, watch } from "@nuxtjs/composition-api";
 	import store from "@/store.js";
-	import axios from "axios";
 	import LazyHydrate from "vue-lazy-hydration";
-
 	import useLiveGames from "../modules/useLiveGames";
 	import useGamesByDate from "../modules/useGamesByDate";
 
@@ -49,9 +51,7 @@
 			const { liveGames, loadLiveGames } = useLiveGames();
 			const { games, loadGames } = useGamesByDate();
 
-			const getOpenGame = game => {
-				return openGames.value.find(item => item.image == game.image);
-			};
+			const getOpenGame = game => openGames.value.find(item => item.image == game.image);
 			const openGame = countryName => {
 				if (openGames.value.includes(countryName)) {
 					openGames.value = openGames.value.filter(game => game.image != countryName.image);

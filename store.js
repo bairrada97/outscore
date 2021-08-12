@@ -31,12 +31,15 @@ const getAwayTeamH2H = () => state.selectedMatch.awayTeamH2H;
 const getHomeTeamH2H = () => state.selectedMatch.homeTeamH2H;
 const getSelectedTab = () => state.selectedTab;
 const getSelectedFilter = () => state.selectedFilter;
-
+const getStandings = () => state.selectedMatch.standings;
 const getTimezone = () => state.timezone;
+const getTeamsFromStandings = () => state.selectedMatch.teams;
 
 const getH2H = () => {
     return state.selectedMatch.h2h;
 };
+const setTeamsFromStandings = (response) => state.selectedMatch.teams = response;
+
 const setAwayTeamH2H = response => {
     state.selectedMatch.awayTeamH2H = response;
 };
@@ -49,10 +52,6 @@ const setH2H = response => {
 
 const setStandings = response => {
     state.selectedMatch.standings = response;
-};
-
-const getStandings = () => {
-    return state.selectedMatch.standings;
 };
 
 const setLiveGames = response => {
@@ -167,5 +166,8 @@ export default {
     setSelectedFilter,
     getSelectedFilter,
     getBetsHelper,
-    setBetsHelper
+    setBetsHelper,
+
+    setTeamsFromStandings,
+   getTeamsFromStandings
 };
