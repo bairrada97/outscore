@@ -8,8 +8,7 @@
 				</div>
 				<div class="matchInfo__statusContainer">
 					<div class="matchInfo__scoreContainer">
-						<span class="matchInfo__score" v-for="(score, index) in match.goals" :key="index">{{ score ? score : 0 }}</span>
-
+						<span class="matchInfo__score" v-if="match.fixture.status.short != 'CANC' && match.fixture.status.short != 'PST' && match.fixture.status.short != 'ABD' && match.fixture.status.short != 'WO'" v-for="(score, index) in match.goals" :key="index">{{ score ? score : 0 }}</span>
 						<div class="matchInfo__extraInfo" v-if="match.score.penalty.home && match.score.penalty.away">
 							Penalties
 							<span class="matchInfo__extraInfoContainer">
@@ -17,8 +16,8 @@
 								<span class="matchInfo__extraScore--divider"> - </span>
 							</span>
 						</div>
+						<span class="matchInfo__extraInfo" v-else>{{ match.fixture.status.short == "1H" || match.fixture.status.short == "2H" ? match.fixture.status.elapsed + "'" : match.fixture.status.long }} </span>
 					</div>
-					<!-- <span class="matchInfo____status" v-if="match.fixture">{{ match.fixture.status.short == "FT" ? "FT" : match.fixture.status.elapsed ? match.fixture.status.elapsed : getDate(match.fixture.timestamp) }}</span> -->
 				</div>
 			</div>
 			<div class="matchInfo__timerContainer">
@@ -26,7 +25,7 @@
 					<div class="matchInfo__timerProgress" v-if="match.fixture" :style="{ width: convertMatchCurrentTimeInWidth(match.fixture.status.elapsed) }"></div>
 				</div>
 				<div class="matchInfo__labelsContainer">
-					<!-- <span class="matchInfo__label">{{ getDate(match.fixture.timestamp) }}</span> -->
+					<span class="matchInfo__label">{{ getDate(match.fixture.timestamp) }}</span>
 					<span class="matchInfo__label">HT</span>
 					<span class="matchInfo__label">FT</span>
 				</div>
@@ -102,7 +101,7 @@
 
 		&__scoreContainer {
 			display: grid;
-			gap: 16px;
+			gap: 5px 16px;
 			text-align: center;
 		}
 

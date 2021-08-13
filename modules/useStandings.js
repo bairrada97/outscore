@@ -14,8 +14,8 @@ export default function () {
                     const {away, home} = selectedMatch.teams;
                      standings.value = response.data.response[0].league.standings;
                     if( standings.value.length <= 1) {
-                          standings.value = response.data.response[0].league.standings.shift();
-                         store.setStandings(standings.value);
+                        standings.value = response.data.response[0].league.standings.shift();
+                        store.setStandings(standings.value);
                     }else{
                         const getGroup =  standings.value?.filter(group =>group.find((item) => item.team.id == away.id || item.team.id == home.id));
                         store.setStandings(getGroup);
@@ -27,7 +27,9 @@ export default function () {
                   
                 })
               
-        } catch (error) {}
+        } catch (error) {
+            store.setStandings({});
+        }
     };
 
     return {

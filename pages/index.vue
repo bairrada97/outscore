@@ -89,6 +89,31 @@
 
 			onMounted(() => {
 				fetch();
+				document.addEventListener("visibilitychange", () => {
+					if (document.visibilityState == "hidden") {
+						clearInterval(interval.value);
+					} else {
+						if (liveToggle.value) {
+							loadLiveGames().then(() => {
+								getLeagues.value = liveGames.value;
+							});
+						} else {
+							if (new Date().toISOString().split("T")[0] != selectedDate.value) return;
+							fetch();
+						}
+						clearInterval(interval.value);
+						interval.value = setInterval(() => {
+							if (liveToggle.value) {
+								loadLiveGames().then(() => {
+									getLeagues.value = liveGames.value;
+								});
+							} else {
+								if (new Date().toISOString().split("T")[0] != selectedDate.value) return;
+								fetch();
+							}
+						}, 15000);
+					}
+				});
 			});
 
 			onDeactivated(() => {

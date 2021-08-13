@@ -7,7 +7,7 @@ export default function (fixture) {
 	const homeTeam = ref(null);
 	const awayTeam = ref(null);
 	const currentLeague = fixture.league;
-	const extraInfo = ref("")
+	const extraInfo = ref(null)
 	const loadBetsHelper = async (home, away) => {
 		try {
 			await axios.get(`https://api-football-v3.herokuapp.com/api/v3/betshelper/?home=${home.id}&away=${away.id}`)
@@ -64,11 +64,17 @@ export default function (fixture) {
 
 	const getBoardInfo = computed(() => {
 		if (betsHelperResponse.value.length == 0 || betsHelperResponse.value == undefined) return;
-
+		
 		const {home,away} = betsHelperResponse.value.value;
 		const getHomeFinishedGames = home.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN");
 		const getAwayFinishedGames = away.filter(item => item.fixture.status.short == "FT" || item.fixture.status.short == "AET" || item.fixture.status.short == "PEN");
+		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
 
+		const isFriendlyMatch  =  uniqueMatches.find(fixture => fixture.league.id == 667);
+
+		if(isFriendlyMatch){ 
+			extraInfo.value = "At least one of last the 5 games is a friendly match"
+		}
 		const getHomeWinnerLength = getHomeFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == homeTeam.value.id && team.winner)).filter(match => match.length).length
 		const getHomeLosesLength = getHomeFinishedGames.map(item =>  Object.values(item.teams).filter(team => team.id == homeTeam.value.id && team.winner == false)).filter(match => match.length).length
 		const getHomeDrawsLength = home.length - (getHomeWinnerLength + getHomeLosesLength);
@@ -127,15 +133,12 @@ export default function (fixture) {
 	})  
 
 
-
 	const betsHelperFulltime = computed(() => {
 		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
 		const { away, home } = betsHelperResponse.value.value;
 		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
-		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
-		if(isDifferentCompetition){
-			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
-		}
+	
+		
 		return uniqueMatches?.reduce((acc, stats) => {
 			getGoals(acc, stats, 1.5, "fulltime");
 			getGoals(acc, stats, 2.5, "fulltime");
@@ -166,10 +169,8 @@ export default function (fixture) {
 		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
 		const { away, home } = betsHelperResponse.value.value;
 		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
-		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
-		if(isDifferentCompetition){
-			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
-		}
+
+
 		return uniqueMatches?.reduce((acc, stats) => {
 			getGoals(acc, stats, 0.5, "firsthalf");
 			getGoals(acc, stats, 1.5, "firsthalf");
@@ -188,10 +189,7 @@ export default function (fixture) {
 		if (betsHelperResponse.value.value.length == 0 || betsHelperResponse.value.value == undefined) return;
 		const { away, home } = betsHelperResponse.value.value;
 		const uniqueMatches = [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()];
-		const isDifferentCompetition  =  [...new Map([...away, ...home].map(item => [item.fixture.id, item])).values()].find(league => league.id !== currentLeague.id);
-		if(isDifferentCompetition){
-			extraInfo.value = "At least one of last the 5 games is from a different competition from this match"
-		}
+
 		return uniqueMatches?.reduce((acc, stats) => {
 			getGoals(acc, stats, 0.5, "secondhalf");
 			getGoals(acc, stats, 1.5, "secondhalf");
@@ -504,7 +502,7 @@ export default function (fixture) {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const divideTime = time.split("-")
-		const timeInGame = stats.events.filter(events => events.time.elapsed >= +divideTime[0] &&  events.time.elapsed <= +divideTime[1] && events.type =="Goal");
+		const timeInGame = stats.events.filter(events => events.time.elapsed >= +divideTime[0] &&  events.time.elapsed <= +divideTime[1] && (events.detail =="Normal Goal" || events.detail =="Penalty" || events.detail =="Own Goal"));
 
 		acc["Scored Between"] = acc["Scored Between"] || {};
 		acc["Scored Between"][`${time}`] = acc["Scored Between"][`${time}`] || {};

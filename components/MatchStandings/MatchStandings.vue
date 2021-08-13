@@ -1,5 +1,5 @@
 <template>
-	<div class="matchStandings">
+	<div class="matchStandings" v-if="standings.length > 0">
 		<LazyHydrate when-visible>
 			<div class="matchStandings__labels">
 				<div>#</div>
@@ -12,7 +12,7 @@
 			</div>
 		</LazyHydrate>
 
-		<div class="matchStandings__container" v-if="standings">
+		<div class="matchStandings__container">
 			<CardStandings v-for="standing in standings" :key="standing.team.id" :standing="standing" :color="getColorAndDescription(standing)" />
 		</div>
 

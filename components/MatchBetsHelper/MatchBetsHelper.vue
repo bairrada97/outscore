@@ -2,6 +2,7 @@
 	<div class="matchBetsHelper">
 		<FiltersWrapper v-if="betsHelperResponse.value">
 			<Filters title="Last 5 games">
+				{{ extraInfo }}
 				<CardBetsBoard v-if="getBoardInfo" :matchDetail="matchDetail" :getBoardInfo="getBoardInfo" title="Last 5 games" type="All"></CardBetsBoard>
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Full Time')" v-if="getSelectedFilter == 'Last 5 games'">
 					<CardBetsHelper name="Full Time" :isOpen="getOpenTeamLineup('Full Time') ? 'isOpen' : ''">
