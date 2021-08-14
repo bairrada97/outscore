@@ -8,15 +8,16 @@
 				</div>
 				<div class="matchInfo__statusContainer">
 					<div class="matchInfo__scoreContainer">
-						<span class="matchInfo__score" v-if="match.fixture.status.short != 'CANC' && match.fixture.status.short != 'PST' && match.fixture.status.short != 'ABD' && match.fixture.status.short != 'WO'" v-for="(score, index) in match.goals" :key="index">{{ score ? score : 0 }}</span>
-						<div class="matchInfo__extraInfo" v-if="match.score.penalty.home && match.score.penalty.away">
+						<span class="matchInfo__score" v-if="!gameWillNotStart.includes(match.fixture.status.short)" v-for="(score, index) in match.goals" :key="index">{{ score ? score : 0 }}</span>
+						<span class="matchInfo__extraInfo" v-if="match.fixture.status.short == 'NS' && seconds > 0">{{ displayTimeLeftForGameStart }}</span>
+						<div class="matchInfo__extraInfo" v-if="match.fixture.status.short == 'PEN'">
 							Penalties
 							<span class="matchInfo__extraInfoContainer">
 								<span class="matchInfo__extraScore" v-for="(score, index) in match.score.penalty" :key="index"> {{ score }} </span>
 								<span class="matchInfo__extraScore--divider"> - </span>
 							</span>
 						</div>
-						<span class="matchInfo__extraInfo" v-else>{{ match.fixture.status.short == "1H" || match.fixture.status.short == "2H" ? match.fixture.status.elapsed + "'" : match.fixture.status.long }} </span>
+						<span class="matchInfo__extraInfo">{{ longShortNames.includes(match.fixture.status.short) ? match.fixture.status.long : match.fixture.status.elapsed }} </span>
 					</div>
 				</div>
 			</div>
@@ -25,7 +26,7 @@
 					<div class="matchInfo__timerProgress" v-if="match.fixture" :style="{ width: convertMatchCurrentTimeInWidth(match.fixture.status.elapsed) }"></div>
 				</div>
 				<div class="matchInfo__labelsContainer">
-					<span class="matchInfo__label">{{ getDate(match.fixture.timestamp) }}</span>
+					<span class="matchInfo__label" v-if="match.fixture">{{ getDate(match.fixture.timestamp) }}</span>
 					<span class="matchInfo__label">HT</span>
 					<span class="matchInfo__label">FT</span>
 				</div>
@@ -35,7 +36,7 @@
 </template>
 
 <script>
-	import { watch, computed } from "@nuxtjs/composition-api";
+	import { watch, computed, ref } from "@nuxtjs/composition-api";
 	import useCalendar from "../../modules/useCalendar";
 	import store from "@/store.js";
 
@@ -46,6 +47,35 @@
 			}
 		},
 		setup(props) {
+			const gameWillNotStart = ["CANC", "PST", "ABD", "WO"];
+			const longShortNames = ["CANC", "PST", "ABD", "WO", "FT"];
+			const days = ref(0);
+			const hours = ref(0);
+			const minutes = ref(0);
+			const seconds = ref(0);
+
+			const timer = setInterval(function () {
+				const gameDate = props.match.fixture.date;
+				const timeLeftForGameStart = new Date(gameDate).getTime() - new Date().getTime();
+				days.value = Math.floor(timeLeftForGameStart / (1000 * 60 * 60 * 24));
+				hours.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				minutes.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60)) / (1000 * 60));
+				seconds.value = Math.floor((timeLeftForGameStart % (1000 * 60)) / 1000);
+
+				hours.value = hours.value < 10 ? "0" + hours.value : hours.value;
+				minutes.value = minutes.value < 10 ? "0" + minutes.value : minutes.value;
+
+				if (timeLeftForGameStart < 0) clearInterval(timer);
+			}, 1000);
+
+			const displayTimeLeftForGameStart = computed(() => {
+				if (days.value > 0) {
+					return days.value + 1 + " days left";
+				} else {
+					return hours.value + ":" + minutes.value + ":" + seconds.value;
+				}
+			});
+
 			const getDate = timestamp => {
 				let hours = new Date(timestamp * 1000).getHours();
 				let minutes = new Date(timestamp * 1000).getMinutes();
@@ -60,7 +90,7 @@
 				let maxTime = 90;
 				return Math.min(Math.max(parseInt((time * 100) / maxTime), 0), 100) + "%";
 			};
-			return { getDate, convertMatchCurrentTimeInWidth };
+			return { getDate, convertMatchCurrentTimeInWidth, gameWillNotStart, displayTimeLeftForGameStart, longShortNames, seconds };
 		}
 	};
 </script>
