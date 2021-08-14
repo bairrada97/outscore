@@ -48,7 +48,7 @@
 		},
 		setup(props) {
 			const gameWillNotStart = ["CANC", "PST", "ABD", "WO"];
-			const longShortNames = ["CANC", "PST", "ABD", "WO", "FT"];
+			const longShortNames = ["CANC", "PST", "ABD", "WO", "FT", "HT"];
 			const days = ref(0);
 			const hours = ref(0);
 			const minutes = ref(0);
