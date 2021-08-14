@@ -36,7 +36,7 @@
 </template>
 
 <script>
-	import { watch, computed, ref } from "@nuxtjs/composition-api";
+	import { watch, computed, ref, onActivated, onDeactivated } from "@nuxtjs/composition-api";
 	import useCalendar from "../../modules/useCalendar";
 	import store from "@/store.js";
 
@@ -53,20 +53,7 @@
 			const hours = ref(0);
 			const minutes = ref(0);
 			const seconds = ref(0);
-
-			const timer = setInterval(function () {
-				const gameDate = props.match.fixture.date;
-				const timeLeftForGameStart = new Date(gameDate).getTime() - new Date().getTime();
-				days.value = Math.floor(timeLeftForGameStart / (1000 * 60 * 60 * 24));
-				hours.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-				minutes.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60)) / (1000 * 60));
-				seconds.value = Math.floor((timeLeftForGameStart % (1000 * 60)) / 1000);
-
-				hours.value = hours.value < 10 ? "0" + hours.value : hours.value;
-				minutes.value = minutes.value < 10 ? "0" + minutes.value : minutes.value;
-
-				if (timeLeftForGameStart < 0) clearInterval(timer);
-			}, 1000);
+			const timer = ref(null);
 
 			const displayTimeLeftForGameStart = computed(() => {
 				if (days.value > 0) {
@@ -90,6 +77,26 @@
 				let maxTime = 90;
 				return Math.min(Math.max(parseInt((time * 100) / maxTime), 0), 100) + "%";
 			};
+
+			onDeactivated(() => {
+				clearInterval(timer.value);
+			});
+			onActivated(() => {
+				timer.value = setInterval(function () {
+					const gameDate = props.match?.fixture.date;
+					if (!gameDate) return;
+					const timeLeftForGameStart = new Date(gameDate).getTime() - new Date().getTime();
+					days.value = Math.floor(timeLeftForGameStart / (1000 * 60 * 60 * 24));
+					hours.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+					minutes.value = Math.floor((timeLeftForGameStart % (1000 * 60 * 60)) / (1000 * 60));
+					seconds.value = Math.floor((timeLeftForGameStart % (1000 * 60)) / 1000);
+
+					hours.value = hours.value < 10 ? "0" + hours.value : hours.value;
+					minutes.value = minutes.value < 10 ? "0" + minutes.value : minutes.value;
+
+					if (timeLeftForGameStart < 0) clearInterval(timer.value);
+				}, 1000);
+			});
 			return { getDate, convertMatchCurrentTimeInWidth, gameWillNotStart, displayTimeLeftForGameStart, longShortNames, seconds };
 		}
 	};
