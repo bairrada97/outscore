@@ -14,7 +14,7 @@
 </template>
 
 <script>
-	import { reactive, toRefs, ref, computed, useFetch, useContext, onActivated, onMounted, onDeactivated, watch, onUpdated } from "@nuxtjs/composition-api";
+	import { reactive, toRefs, ref, computed, useFetch, useContext, onActivated, onMounted, onDeactivated, watch, onUnmounted } from "@nuxtjs/composition-api";
 
 	import store from "@/store.js";
 	import axios from "axios";
@@ -65,15 +65,21 @@
 				}
 			);
 
-			fetch();
 			onDeactivated(() => {
 				clearInterval(interval.value);
+				document.removeEventListener("visibilitychange", fetch);
 			});
 
 			onActivated(() => {
+				document.addEventListener("visibilitychange", fetch);
 				interval.value = setInterval(() => {
 					fetch();
 				}, 15000);
+			});
+
+			onMounted(() => {
+				fetch();
+				document.addEventListener("visibilitychange", fetch);
 			});
 
 			return {

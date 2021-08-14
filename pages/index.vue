@@ -24,7 +24,7 @@
 </template>
 
 <script>
-	import { defineComponent, onDeactivated, ref, onMounted, useFetch, onActivated, computed, watch } from "@nuxtjs/composition-api";
+	import { defineComponent, onDeactivated, ref, onMounted, useFetch, onActivated, computed, watch, onUnmounted } from "@nuxtjs/composition-api";
 	import store from "@/store.js";
 	import LazyHydrate from "vue-lazy-hydration";
 	import useLiveGames from "../modules/useLiveGames";
@@ -89,10 +89,23 @@
 
 			onMounted(() => {
 				fetch();
-				document.addEventListener("visibilitychange", () => {
-					if (document.visibilityState == "hidden") {
-						clearInterval(interval.value);
+				document.addEventListener("visibilitychange", fetchOnBrowserVisibility);
+			});
+
+			const fetchOnBrowserVisibility = () => {
+				if (document.visibilityState == "hidden") {
+					clearInterval(interval.value);
+				} else {
+					if (liveToggle.value) {
+						loadLiveGames().then(() => {
+							getLeagues.value = liveGames.value;
+						});
 					} else {
+						if (new Date().toISOString().split("T")[0] != selectedDate.value) return;
+						fetch();
+					}
+					clearInterval(interval.value);
+					interval.value = setInterval(() => {
 						if (liveToggle.value) {
 							loadLiveGames().then(() => {
 								getLeagues.value = liveGames.value;
@@ -101,25 +114,17 @@
 							if (new Date().toISOString().split("T")[0] != selectedDate.value) return;
 							fetch();
 						}
-						clearInterval(interval.value);
-						interval.value = setInterval(() => {
-							if (liveToggle.value) {
-								loadLiveGames().then(() => {
-									getLeagues.value = liveGames.value;
-								});
-							} else {
-								if (new Date().toISOString().split("T")[0] != selectedDate.value) return;
-								fetch();
-							}
-						}, 15000);
-					}
-				});
-			});
+					}, 15000);
+				}
+			};
 
 			onDeactivated(() => {
 				clearInterval(interval.value);
+				document.removeEventListener("visibilitychange", fetchOnBrowserVisibility);
 			});
 			onActivated(() => {
+				fetch();
+				document.addEventListener("visibilitychange", fetchOnBrowserVisibility);
 				interval.value = setInterval(() => {
 					if (liveToggle.value) {
 						loadLiveGames().then(() => {
