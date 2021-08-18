@@ -106,7 +106,39 @@ export default {
             cacheAssets: true,
             theme_color: "#187c56",
             background_color: " #187c56"
-        }
+        },
+         workbox: {
+            runtimeCaching: [
+                {
+                    // Should be a regex string. Compiles into new RegExp('https://my-cdn.com/.*')
+                    urlPattern: 'https://api-football-v3.herokuapp.com/api/v3/.*',
+                    strategyPlugins: [{
+                    use: 'Expiration',
+                    config: {
+                        maxAgeSeconds: 15
+                    }
+                    }]
+                    // Defaults to `NetworkFirst` if omitted
+                    // handler: 'NetworkFirst',
+                    // Defaults to `GET` if omitted
+                    // method: 'GET'
+                },
+                {
+                    // Should be a regex string. Compiles into new RegExp('https://my-cdn.com/.*')
+                    urlPattern: 'https://media.api-sports.io/football/.*',
+                    strategyPlugins: [{
+                    use: 'Expiration',
+                    config: {
+                         maxEntries: 100,
+                    }
+                    }]
+                    // Defaults to `NetworkFirst` if omitted
+                    // handler: 'NetworkFirst',
+                    // Defaults to `GET` if omitted
+                    // method: 'GET'
+                }
+            ]
+         }
     },
 
     generate: {

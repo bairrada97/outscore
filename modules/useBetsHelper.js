@@ -6,7 +6,6 @@ export default function (fixture) {
 	const betsHelperResponse = ref([]);
 	const homeTeam = ref(null);
 	const awayTeam = ref(null);
-	const currentLeague = fixture.league;
 	const extraInfo = ref(null)
 	const loadBetsHelper = async (home, away) => {
 		try {
@@ -86,6 +85,7 @@ export default function (fixture) {
 	
 	
 		return {
+			gameLength: getHomeFinishedGames.length,
 			matches:{
 				home:[
 				{
@@ -515,12 +515,12 @@ export default function (fixture) {
 
 		if (acc["Scored Between"][`${time}`].home.name == homeTeamSide?.name) {
 			if (timeInGame.length) {
-				acc["Scored Between"][`${time}`].home.value += timeInGame.length;
+				acc["Scored Between"][`${time}`].home.value++;
 			}
 		}
 		if (acc["Scored Between"][`${time}`].away.name == awayTeamSide?.name) {
 			if (timeInGame.length) {
-				acc["Scored Between"][`${time}`].away.value += timeInGame.length;
+				acc["Scored Between"][`${time}`].away.value++;
 			}
 		}
 	}

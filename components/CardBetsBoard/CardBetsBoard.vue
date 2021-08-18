@@ -3,12 +3,11 @@
 		<header>
 			<div>
 				<img width="32" height="32" :src="matchDetail.teams.home.logo" alt="" />
-				<span class="cardBetsBoard__teamRank">({{ teamRanks[0] }}º)</span>
+				<span class="cardBetsBoard__teamRank" v-if="getTeamsFromStandings">({{ renderTeamRank(matchDetail.teams.home.id).rank }}º)</span>
 			</div>
-
 			<span>{{ title }}</span>
 			<div>
-				<span class="cardBetsBoard__teamRank">({{ teamRanks[1] }}º)</span>
+				<span class="cardBetsBoard__teamRank" v-if="getTeamsFromStandings">({{ renderTeamRank(matchDetail.teams.away.id).rank }}º)</span>
 				<img width="32" height="32" :src="matchDetail.teams.away.logo" alt="" />
 			</div>
 		</header>
@@ -50,9 +49,9 @@
 		},
 		setup(props) {
 			const getTeamsFromStandings = computed(() => store.getTeamsFromStandings());
-			const teamRanks = computed(() => getTeamsFromStandings.value.map(team => team.rank));
+			const renderTeamRank = team => getTeamsFromStandings?.value?.find(teamFromStandings => teamFromStandings.team.id == team);
 
-			return { teamRanks };
+			return { renderTeamRank, getTeamsFromStandings };
 		}
 	};
 </script>

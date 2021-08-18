@@ -93,6 +93,7 @@
 
 					hours.value = hours.value < 10 ? "0" + hours.value : hours.value;
 					minutes.value = minutes.value < 10 ? "0" + minutes.value : minutes.value;
+					seconds.value = seconds.value < 10 ? "0" + seconds.value : seconds.value;
 
 					if (timeLeftForGameStart < 0) clearInterval(timer.value);
 				}, 1000);

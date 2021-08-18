@@ -7,7 +7,6 @@
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Full Time')" v-if="getSelectedFilter == 'Last 5 games'">
 					<CardBetsHelper name="Full Time" :isOpen="getOpenTeamLineup('Full Time') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Full Time')">
-							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperFulltime" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
@@ -20,7 +19,6 @@
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('First Half')" v-if="getSelectedFilter == 'Last 5 games'">
 					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('First Half')">
-							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperFirstHalf" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
@@ -33,7 +31,6 @@
 				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Second Half')" v-if="getSelectedFilter == 'Last 5 games'">
 					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Second Half')">
-							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperSecondHalf" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
@@ -45,41 +42,42 @@
 				</div>
 			</Filters>
 			<Filters title="H2H">
-				<CardBetsBoard v-if="getBoardInfo" :matchDetail="matchDetail" :getBoardInfo="getBoardInfoH2H" title="H2H - Last 5 games" type="H2H"></CardBetsBoard>
-				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Full Time')" v-if="getSelectedFilter == 'H2H'">
+				<CardBetsBoard v-if="getBoardInfoH2H" :matchDetail="matchDetail" :getBoardInfo="getBoardInfoH2H" title="H2H - Last 5 games" type="H2H"></CardBetsBoard>
+
+				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Full Time')" v-if="getSelectedFilter == 'H2H' && getBoardInfoH2H.gameLength > 0">
 					<CardBetsHelper name="Full Time" :isOpen="getOpenTeamLineup('Full Time') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Full Time')">
 							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HFulltime" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
-									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLengthH2H" />
 								</div>
 							</li>
 						</ul>
 					</CardBetsHelper>
 				</div>
-				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('First Half')" v-if="getSelectedFilter == 'H2H'">
+				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('First Half')" v-if="getSelectedFilter == 'H2H' && getBoardInfoH2H.gameLength > 0">
 					<CardBetsHelper name="First Half" :isOpen="getOpenTeamLineup('First Half') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('First Half')">
 							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HFirstHalf" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
-									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLengthH2H" />
 								</div>
 							</li>
 						</ul>
 					</CardBetsHelper>
 				</div>
-				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Second Half')" v-if="getSelectedFilter == 'H2H'">
+				<div class="matchBetsHelper__overallInfo__dropdown" @click="openTeamLineup('Second Half')" v-if="getSelectedFilter == 'H2H' && getBoardInfoH2H.gameLength > 0">
 					<CardBetsHelper name="Second Half" :isOpen="getOpenTeamLineup('Second Half') ? 'isOpen' : ''">
 						<ul class="matchBetsHelper__list" v-if="getOpenTeamLineup('Second Half')">
 							<!-- <span>{{ extraInfo }}</span> -->
 							<li class="matchBetsHelper__item" v-for="(category, index) in betsHelperH2HSecondHalf" :key="index">
 								<h3 class="matchBetsHelper__title">{{ index }}</h3>
 								<div class="matchBetsHelper__stats" v-for="(subCategory, index) in category" :key="index">
-									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLength" />
+									<CardStats :statistics="subCategory" :team="index" :lastGamesLength="lastGamesLengthH2H" />
 								</div>
 							</li>
 						</ul>
@@ -117,7 +115,8 @@
 		setup(props) {
 			const { loadBetsHelper, betsHelperFulltime, betsHelperFirstHalf, betsHelperSecondHalf, betsHelperH2HFulltime, betsHelperH2HFirstHalf, betsHelperH2HSecondHalf, getBoardInfo, getBoardInfoH2H, extraInfo, betsHelperResponse } = useBetsHelper(props.matchDetail);
 			const { home, away } = props.matchDetail.teams;
-			const lastGamesLength = 5;
+			const lastGamesLength = computed(() => getBoardInfo.value.gameLength);
+			const lastGamesLengthH2H = computed(() => getBoardInfoH2H.value.gameLength);
 			const isOpen = ref([]);
 			const getSelectedFilter = computed(() => store.getSelectedFilter());
 
@@ -127,7 +126,7 @@
 
 			const openTeamLineup = name => {
 				if (isOpen.value.includes(name)) {
-					isOpen.value = isOpen.value.filter(name => name != name);
+					isOpen.value = isOpen.value.filter(openedNames => openedNames !== name);
 				} else {
 					isOpen.value.push(name);
 				}
@@ -160,7 +159,8 @@
 				fetchState,
 				betsHelperResponse,
 				getBoardInfo,
-				getBoardInfoH2H
+				getBoardInfoH2H,
+				lastGamesLengthH2H
 			};
 		}
 	};

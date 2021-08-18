@@ -12,9 +12,7 @@
 			<CardTeamsForm :teamsForm="displayTeamsForm" />
 		</LazyHydrate>
 		-->
-		<LazyHydrate when-visible>
-			<CardVenue :venue="displayVenue" />
-		</LazyHydrate>
+		<CardVenue :venue="displayVenue" />
 	</div>
 </template>
 

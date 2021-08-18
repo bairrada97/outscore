@@ -3,7 +3,7 @@
 		<MatchInfo :match="selectedMatch" />
 
 		<MatchTabsWrapper>
-			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview' && Object.keys(selectedMatch).length > 0 && standings.length > 0" :matchDetail="selectedMatch" /> </MatchTab>
+			<MatchTab title="Overview"><MatchOverview v-if="getSelectedTab == 'Overview' && Object.keys(selectedMatch).length > 0" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Lineups"><MatchLineups v-if="getSelectedTab == 'Lineups'" :matchDetail="selectedMatch" /> </MatchTab>
 			<MatchTab title="Stats"><MatchStatistics v-if="getSelectedTab == 'Stats'" :matchDetail="selectedMatch" /></MatchTab>
 			<MatchTab title="Bets Helper"><MatchBetsHelper v-if="getSelectedTab == 'Bets Helper'" :matchDetail="selectedMatch" /></MatchTab>

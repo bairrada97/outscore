@@ -13,7 +13,7 @@
 		</LazyHydrate>
 
 		<div class="matchStandings__container">
-			<CardStandings v-for="standing in standings" :key="standing.team.id" :standing="standing" :color="getColorAndDescription(standing)" />
+			<CardStandings v-for="standing in standings.flat()" :key="standing.team.id" :standing="standing" :color="getColorAndDescription(standing)" />
 		</div>
 
 		<div class="matchStandings__colorsDescriptionContainer" v-if="addColorsToDescription">
@@ -47,8 +47,9 @@
 		setup(props) {
 			const { loadStandings } = useStandings();
 			const standings = computed(() => store.getStandings());
+
 			const getTeamsFromStandings = computed(() => store.getTeamsFromStandings());
-			const filterTeamDescription = computed(() => new Set(standings?.value?.map(item => item.description)));
+			const filterTeamDescription = computed(() => new Set(standings?.value?.flat().map(item => item.description)));
 
 			const promotionColors = ["#187C56", "#7CCC15", "#3CDBD3"];
 			const relegationColors = ["#D16666", "#FF8552", "#E3DBDB"];
@@ -58,6 +59,7 @@
 
 			const addColorsToDescription = computed(() => {
 				colorPromotionIndex.value = 0;
+				colorRelegationIndex.value = 0;
 				return Array.from(filterTeamDescription?.value)?.reduce((acc, description, index) => {
 					if (!description) return acc;
 					if (description.includes("Relegation")) {
