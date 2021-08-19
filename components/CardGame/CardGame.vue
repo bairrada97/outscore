@@ -1,14 +1,14 @@
 <template>
-	<nuxt-link :class="{ isGameLive: isGameLive() }" class="cardGame" :to="{ name: 'match', query: { fixture: game.fixture.id } }">
+	<nuxt-link :class="{ isGameLive: isGameLive(), goalScored: homeTeamScored || awayTeamScored }" class="cardGame" :to="{ name: 'match', query: { fixture: game.fixture.id } }">
 		<span class="cardGame__status" v-if="isGameLive()">{{ game.fixture.status.elapsed }}’</span>
 		<span class="cardGame__status" v-else-if="type == 'H2H'">{{ game.fixture.status.short == "FT" || game.fixture.status.short == "NS" ? getMatchDay(game.fixture.date) + "." + getMatchMonth(game.fixture.date) : game.fixture.status.short }}</span>
 		<span class="cardGame__status" v-else>{{ game.fixture.status.short == "NS" ? getStartMatchTime(game.fixture.timestamp) : game.fixture.status.short }}</span>
 		<div class="cardGame__teamsContainer">
-			<div class="cardGame__team" :class="{ teamScored: game.teams.home.name == teamScored }">
+			<div class="cardGame__team" :class="{ teamScored: homeTeamScored }">
 				<span class="cardGame__team__goal">{{ game.score.penalty.home ? game.score.penalty.home : game.goals.home }}</span>
 				<span class="cardGame__team__name">{{ game.teams.home.name }}</span>
 			</div>
-			<div class="cardGame__team" :class="{ teamScored: game.teams.away.name == teamScored }">
+			<div class="cardGame__team" :class="{ teamScored: awayTeamScored }">
 				<span class="cardGame__team__goal">{{ game.score.penalty.away ? game.score.penalty.away : game.goals.away }}</span>
 				<span class="cardGame__team__name">{{ game.teams.away.name }}</span>
 			</div>
@@ -47,11 +47,11 @@
 		},
 		setup(props) {
 			const { game } = props;
-			const teamScored = ref("");
-			const hasScored = ref(false);
-			const isGameLive = () => {
-				return game.fixture.status.long != "Match Finished" && (game.fixture.status.short == "1H" || game.fixture.status.short == "2H" || game.fixture.status.short == "ET" || game.fixture.status.short == "AET" || game.fixture.status.short == "PEN");
-			};
+			const homeTeamScored = ref("");
+			const awayTeamScored = ref("");
+			const gameLiveCondition = ["1H", "2H", "ET", "PEN", "HT", "BT"];
+
+			const isGameLive = () => game.fixture.status.long != "Match Finished" && gameLiveCondition.includes(game.fixture.status.short);
 
 			const getStartMatchTime = timestamp => {
 				let hours = new Date(timestamp * 1000).getHours();
@@ -72,7 +72,41 @@
 				return month < 10 ? "0" + month : "" + month;
 			};
 
-			return { getStartMatchTime, getMatchDay, getMatchMonth, isGameLive, teamScored, hasScored };
+			watch(
+				() => props.game.goals,
+				(newValue, prevValue) => {
+					if (JSON.stringify(newValue) === JSON.stringify(prevValue)) return;
+					const goalScored = async () => {
+						setValues(newValue, prevValue);
+						await delay(60000);
+						resetValues();
+					};
+
+					const delay = async ms => {
+						return await new Promise(resolve => setTimeout(resolve, ms));
+					};
+
+					const setValues = (newValue, prevValue) => {
+						if (JSON.stringify(newValue.away) > JSON.stringify(prevValue.away)) {
+							homeTeamScored.value = false;
+							awayTeamScored.value = true;
+						}
+						if (JSON.stringify(newValue.home) > JSON.stringify(prevValue.home)) {
+							homeTeamScored.value = true;
+							awayTeamScored.value = false;
+						}
+					};
+
+					const resetValues = () => {
+						homeTeamScored.value = false;
+						awayTeamScored.value = false;
+					};
+
+					goalScored();
+				}
+			);
+
+			return { getStartMatchTime, getMatchDay, getMatchMonth, isGameLive, homeTeamScored, awayTeamScored };
 		}
 	};
 </script>

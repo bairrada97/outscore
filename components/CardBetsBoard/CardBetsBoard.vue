@@ -3,11 +3,11 @@
 		<header>
 			<div>
 				<img width="32" height="32" :src="matchDetail.teams.home.logo" alt="" />
-				<span class="cardBetsBoard__teamRank" v-if="getTeamsFromStandings">({{ renderTeamRank(matchDetail.teams.home.id).rank }}º)</span>
+				<span class="cardBetsBoard__teamRank" v-if="renderTeamRank(matchDetail.teams.home.id)">({{ renderTeamRank(matchDetail.teams.home.id).rank }}º)</span>
 			</div>
 			<span>{{ title }}</span>
 			<div>
-				<span class="cardBetsBoard__teamRank" v-if="getTeamsFromStandings">({{ renderTeamRank(matchDetail.teams.away.id).rank }}º)</span>
+				<span class="cardBetsBoard__teamRank" v-if="renderTeamRank(matchDetail.teams.home.id)">({{ renderTeamRank(matchDetail.teams.away.id).rank }}º)</span>
 				<img width="32" height="32" :src="matchDetail.teams.away.logo" alt="" />
 			</div>
 		</header>
