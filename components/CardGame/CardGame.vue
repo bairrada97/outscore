@@ -1,6 +1,6 @@
 <template>
 	<nuxt-link :class="{ isGameLive: isGameLive(), goalScored: homeTeamScored || awayTeamScored }" class="cardGame" :to="{ name: 'match', query: { fixture: game.fixture.id } }">
-		<span class="cardGame__status" v-if="isGameLive()">{{ game.fixture.status.elapsed }}’</span>
+		<span class="cardGame__status" v-if="isGameLive()">{{ game.fixture.status.short == "HT" ? game.fixture.status.short : game.fixture.status.elapsed + "’" }}</span>
 		<span class="cardGame__status" v-else-if="type == 'H2H'">{{ game.fixture.status.short == "FT" || game.fixture.status.short == "NS" ? getMatchDay(game.fixture.date) + "." + getMatchMonth(game.fixture.date) : game.fixture.status.short }}</span>
 		<span class="cardGame__status" v-else>{{ game.fixture.status.short == "NS" ? getStartMatchTime(game.fixture.timestamp) : game.fixture.status.short }}</span>
 		<div class="cardGame__teamsContainer">
@@ -49,7 +49,7 @@
 			const { game } = props;
 			const homeTeamScored = ref("");
 			const awayTeamScored = ref("");
-			const gameLiveCondition = ["1H", "2H", "ET", "PEN", "HT", "BT"];
+			const gameLiveCondition = ["1H", "2H", "HT", "ET", "PEN"];
 
 			const isGameLive = () => game.fixture.status.long != "Match Finished" && gameLiveCondition.includes(game.fixture.status.short);
 
@@ -73,11 +73,13 @@
 			};
 
 			watch(
-				() => props.game.goals,
+				() => [props.game.goals, props.game.fixture.status.elapsed],
 				(newValue, prevValue) => {
-					if (JSON.stringify(newValue) === JSON.stringify(prevValue)) return;
+					const [newGoals, newTime] = newValue;
+					const [prevGoals, prevTime] = prevValue;
+					if (JSON.stringify(newGoals) === JSON.stringify(prevGoals) || newTime - prevTime > 2) return;
 					const goalScored = async () => {
-						setValues(newValue, prevValue);
+						setValues(newGoals, prevGoals);
 						await delay(60000);
 						resetValues();
 					};
@@ -86,12 +88,12 @@
 						return await new Promise(resolve => setTimeout(resolve, ms));
 					};
 
-					const setValues = (newValue, prevValue) => {
-						if (JSON.stringify(newValue.away) > JSON.stringify(prevValue.away)) {
+					const setValues = (newGoals, prevGoals) => {
+						if (JSON.stringify(newGoals.away) > JSON.stringify(prevGoals.away)) {
 							homeTeamScored.value = false;
 							awayTeamScored.value = true;
 						}
-						if (JSON.stringify(newValue.home) > JSON.stringify(prevValue.home)) {
+						if (JSON.stringify(newGoals.home) > JSON.stringify(prevGoals.home)) {
 							homeTeamScored.value = true;
 							awayTeamScored.value = false;
 						}
