@@ -53,13 +53,15 @@
 		box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
 		z-index: 99;
 		align-items: center;
+		width: 100%;
+		max-width: 450px;
 
 		&__item {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			padding: 8px 24px;
+			padding: 8px 0;
 			font-weight: 600;
 			font-size: 12px;
 			line-height: 15px;
