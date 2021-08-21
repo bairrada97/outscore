@@ -37,7 +37,7 @@
 		setup(props) {
 			const { country } = props;
 			const liveToggle = computed(() => store.getLiveToggle());
-			const hasLiveGames = country.totalLiveGames > 0;
+			const hasLiveGames = country.totalLiveGames;
 
 			return {
 				liveToggle,
