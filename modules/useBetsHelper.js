@@ -334,7 +334,7 @@ export default function (fixture) {
 		createCategoryObject(acc, "Both Teams To Score", `yes`, homeTeam,awayTeam);
 
 		
-		const sumToCategory = (acc, value, side,categoryCondition, team) => {
+		const sumToCategory = (acc, value, side, team) => {
 			if ((acc["Both Teams To Score"][value][side].name == team?.name) && isBothTeamsToScore) {
 				acc["Both Teams To Score"][value][side].value++;
 			}	
