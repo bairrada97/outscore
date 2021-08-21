@@ -55,10 +55,10 @@
 			const openGame = (event, countryName) => {
 				if (openGames.value.includes(countryName)) {
 					openGames.value = openGames.value.filter(game => game.image != countryName.image);
-				} else {
-					openGames.value.push(countryName);
 					const offset = -45;
 					window.scrollTo({ top: event.currentTarget.getBoundingClientRect().top + window.pageYOffset + offset, behavior: "smooth" });
+				} else {
+					openGames.value.push(countryName);
 				}
 			};
 
