@@ -69,7 +69,7 @@
 			text-transform: uppercase;
 
 			&.nuxt-link-exact-active {
-				color: #609b15;
+				color: var(--color-primary);
 			}
 		}
 	}
