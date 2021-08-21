@@ -47,7 +47,7 @@
 	.navigation {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
-		position: sticky;
+		position: fixed;
 		bottom: 0;
 		background: #ffffff;
 		box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);

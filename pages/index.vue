@@ -5,7 +5,7 @@
 		</LazyHydrate>
 		<CalendarBar />
 
-		<div>
+		<div class="leagueContainer">
 			<h2 class="leagueTypes">National Leagues</h2>
 			<div @click="openGame($event, countryName)" v-for="(countryName, key) in getLeagues" :key="key">
 				<LazyHydrate when-visible>
@@ -52,13 +52,17 @@
 			const { games, loadGames } = useGamesByDate();
 
 			const getOpenGame = game => openGames.value.find(item => item.image == game.image);
-			const openGame = (event, countryName) => {
+			const openGame = ({ currentTarget }, countryName) => {
+				const offset = -45;
 				if (openGames.value.includes(countryName)) {
 					openGames.value = openGames.value.filter(game => game.image != countryName.image);
-					const offset = -45;
-					window.scrollTo({ top: event.currentTarget.getBoundingClientRect().top + window.pageYOffset + offset, behavior: "smooth" });
+
+					window.scrollTo({ top: currentTarget.getBoundingClientRect().top + window.pageYOffset + offset });
 				} else {
 					openGames.value.push(countryName);
+					setTimeout(() => {
+						window.scrollTo({ top: currentTarget.getBoundingClientRect().top + window.pageYOffset + offset, behavior: "smooth" });
+					}, 5);
 				}
 			};
 
@@ -155,6 +159,9 @@
 </script>
 
 <style lang="scss">
+	.leagueContainer {
+		margin-bottom: 55px;
+	}
 	.leagueTypes {
 		font-size: 14px;
 		font-weight: 600;
