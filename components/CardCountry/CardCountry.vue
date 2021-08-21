@@ -65,6 +65,7 @@
 
 			#{$this}__container {
 				background: var(--color-bg--black);
+				color: white;
 				position: sticky;
 				top: 48px;
 			}
