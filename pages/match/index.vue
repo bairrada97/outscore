@@ -71,15 +71,11 @@
 			});
 
 			onActivated(() => {
+				fetch();
 				document.addEventListener("visibilitychange", fetch);
 				interval.value = setInterval(() => {
 					fetch();
 				}, 15000);
-			});
-
-			onMounted(() => {
-				fetch();
-				document.addEventListener("visibilitychange", fetch);
 			});
 
 			return {

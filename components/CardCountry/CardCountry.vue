@@ -65,6 +65,8 @@
 
 			#{$this}__container {
 				background: var(--color-bg--black);
+				position: sticky;
+				top: 48px;
 			}
 			#{$this}__dropdown {
 				color: #fff;

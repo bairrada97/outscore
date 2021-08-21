@@ -7,7 +7,7 @@
 
 		<div>
 			<h2 class="leagueTypes">National Leagues</h2>
-			<div @click="openGame(countryName)" v-for="(countryName, key) in getLeagues" :key="key">
+			<div @click="openGame($event, countryName)" v-for="(countryName, key) in getLeagues" :key="key">
 				<LazyHydrate when-visible>
 					<CardCountry :country="countryName" :name="key" :isOpen="getOpenGame(countryName) ? 'isOpen' : ''">
 						<div class="align--full" v-if="getOpenGame(countryName)">
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-	import { defineComponent, onDeactivated, ref, onMounted, useFetch, onActivated, computed, watch, onUnmounted } from "@nuxtjs/composition-api";
+	import { defineComponent, onDeactivated, ref, onMounted, useFetch, onActivated, computed, watch, nextTick } from "@nuxtjs/composition-api";
 	import store from "@/store.js";
 	import LazyHydrate from "vue-lazy-hydration";
 	import useLiveGames from "../modules/useLiveGames";
@@ -52,11 +52,13 @@
 			const { games, loadGames } = useGamesByDate();
 
 			const getOpenGame = game => openGames.value.find(item => item.image == game.image);
-			const openGame = countryName => {
+			const openGame = (event, countryName) => {
 				if (openGames.value.includes(countryName)) {
 					openGames.value = openGames.value.filter(game => game.image != countryName.image);
 				} else {
 					openGames.value.push(countryName);
+					const offset = -45;
+					window.scrollTo({ top: event.currentTarget.getBoundingClientRect().top + window.pageYOffset + offset, behavior: "smooth" });
 				}
 			};
 
@@ -81,16 +83,11 @@
 				() => [selectedDate.value, liveToggle.value],
 				(newValue, prevValue) => {
 					const dateHasChanged = newValue[0] != prevValue[0];
-
+					openGames.value = [];
 					liveToggle.value && !dateHasChanged ? toggleLive() : fetch();
 					dateHasChanged ? fetch() : "";
 				}
 			);
-
-			onMounted(() => {
-				fetch();
-				document.addEventListener("visibilitychange", fetchOnBrowserVisibility);
-			});
 
 			const fetchOnBrowserVisibility = () => {
 				if (document.visibilityState == "hidden") {
@@ -125,6 +122,7 @@
 			onActivated(() => {
 				fetch();
 				document.addEventListener("visibilitychange", fetchOnBrowserVisibility);
+
 				interval.value = setInterval(() => {
 					if (liveToggle.value) {
 						loadLiveGames().then(() => {
@@ -157,14 +155,6 @@
 </script>
 
 <style lang="scss">
-	.clearCacheButton {
-		position: absolute;
-		top: 50px;
-		left: 50px;
-		border: 1px solid #212121;
-		padding: 8px;
-	}
-
 	.leagueTypes {
 		font-size: 14px;
 		font-weight: 600;
