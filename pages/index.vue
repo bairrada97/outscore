@@ -51,11 +51,11 @@
 			const { liveGames, loadLiveGames } = useLiveGames();
 			const { games, loadGames } = useGamesByDate();
 
-			const getOpenGame = game => openGames.value.find(item => item.image == game.image);
+			const getOpenGame = game => openGames.value.find(item => item.country == game.country);
 			const openGame = ({ currentTarget }, countryName) => {
 				const offset = -45;
 				if (openGames.value.includes(countryName)) {
-					openGames.value = openGames.value.filter(game => game.image != countryName.image);
+					openGames.value = openGames.value.filter(game => game.country != countryName.country);
 
 					window.scrollTo({ top: currentTarget.getBoundingClientRect().top + window.pageYOffset + offset });
 				} else {
