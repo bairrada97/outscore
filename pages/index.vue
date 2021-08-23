@@ -4,7 +4,7 @@
 			<Calendar />
 		</LazyHydrate>
 		<CalendarBar />
-		<div class="leagueContainer">
+		<div class="leagueContainer" v-if="getFavoriteLeagues">
 			<div class="align--full">
 				<h2 class="leagueTypes">Favorite Leagues</h2>
 				<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
@@ -67,8 +67,6 @@
 					.flat(1)
 					.filter(item => item.find(league => favoriteLeaguesID.value.includes(league.league.id)));
 			});
-
-			console.log(getFavoriteLeagues);
 
 			const getOpenGame = game => openGames.value.find(item => item.country == game.country);
 			const openGame = ({ currentTarget }, countryName) => {
