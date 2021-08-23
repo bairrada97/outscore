@@ -210,27 +210,27 @@ export default function (fixture) {
 		const matchesLength = h2h.length; 
 	
 		return h2h?.reduce((acc, stats, index) => {
-			getGoals(acc, stats, 1.5, "fulltime",index,matchesLength);
-			getGoals(acc, stats, 2.5, "fulltime",index,matchesLength);
-			getGoals(acc, stats, 3.5, "fulltime",index,matchesLength);
-			getGoals(acc, stats, 4.5, "fulltime",index,matchesLength);
-			getGoals(acc, stats, 5.5, "fulltime",index,matchesLength);
-			getBothTeamsToScore(acc, stats, "fulltime",index,matchesLength);
-			getCleanSheet(acc, stats,index,matchesLength);
-			getFirstTeamToScore(acc, stats,index,matchesLength);
-			getTotalCorners(acc, stats, 7.5,index,matchesLength);
-			getTotalCorners(acc, stats, 8.5,index,matchesLength);
-			getTotalCorners(acc, stats, 9.5,index,matchesLength);
-			getTotalCorners(acc, stats, 10.5,index,matchesLength);
-			getTotalCorners(acc, stats, 11.5,index,matchesLength);
-			getTotalCorners(acc, stats, 12.5,index,matchesLength);
-			getTotalCards(acc, stats, 2.5,index,matchesLength);
-			getTotalCards(acc, stats, 3.5,index,matchesLength);
-			getTotalCards(acc, stats, 4.5,index,matchesLength);
-			getTotalCards(acc, stats, 5.5,index,matchesLength);
-			getTotalCards(acc, stats, 6.5,index,matchesLength);
-			getTotalCards(acc, stats, 7.5,index,matchesLength);
-			getDrawNoBet(acc, stats,index,matchesLength);
+			getGoals(acc, stats, 1.5, "fulltime",index,matchesLength, true);
+			getGoals(acc, stats, 2.5, "fulltime",index,matchesLength, true);
+			getGoals(acc, stats, 3.5, "fulltime",index,matchesLength, true);
+			getGoals(acc, stats, 4.5, "fulltime",index,matchesLength, true);
+			getGoals(acc, stats, 5.5, "fulltime",index,matchesLength, true);
+			getBothTeamsToScore(acc, stats, "fulltime",index,matchesLength, true);
+			getCleanSheet(acc, stats,index,matchesLength, true);
+			getFirstTeamToScore(acc, stats,index,matchesLength, true);
+			getTotalCorners(acc, stats, 7.5,index,matchesLength, true);
+			getTotalCorners(acc, stats, 8.5,index,matchesLength, true);
+			getTotalCorners(acc, stats, 9.5,index,matchesLength, true);
+			getTotalCorners(acc, stats, 10.5,index,matchesLength, true);
+			getTotalCorners(acc, stats, 11.5,index,matchesLength, true);
+			getTotalCorners(acc, stats, 12.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 2.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 3.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 4.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 5.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 6.5,index,matchesLength, true);
+			getTotalCards(acc, stats, 7.5,index,matchesLength, true);
+			getDrawNoBet(acc, stats,index,matchesLength, true);
 			return acc;
 		}, {});
 	});
@@ -274,7 +274,7 @@ export default function (fixture) {
 		}, {});
 	});
 
-	const getGoals = (acc,stats, value, time, index, matchesLength) => {
+	const getGoals = (acc,stats, value, time, index, matchesLength, isH2H = false) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		let goalsInGame;
@@ -298,7 +298,11 @@ export default function (fixture) {
 		const isAwayGames = index < (matchesLength / 2);
 		const isGameBetweenEachOther = homeTeamSide && awayTeamSide;
 
-
+		if(isH2H){
+			sumToCategory(acc, value,"away",awayTeamSide)
+			sumToCategory(acc, value,"home", homeTeamSide)
+			return
+		}
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, value,"away",awayTeamSide) :	sumToCategory(acc, value,"home", homeTeamSide)
 		}else{
@@ -307,7 +311,7 @@ export default function (fixture) {
 
 	};
 
-	const getBothTeamsToScore = (acc, stats, time, index, matchesLength) => {
+	const getBothTeamsToScore = (acc, stats, time, index, matchesLength, isH2H = false) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		let goalsHome;
@@ -344,6 +348,11 @@ export default function (fixture) {
 		const isGameBetweenEachOther =homeTeamSide && awayTeamSide
 
 
+		if(isH2H){
+			sumToCategory(acc, "yes","away",awayTeamSide)
+			sumToCategory(acc, "yes","home", homeTeamSide)
+			return
+		}
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, "yes","away",awayTeamSide) :	sumToCategory(acc, "yes","home", homeTeamSide)
 		}else{
@@ -353,7 +362,7 @@ export default function (fixture) {
 	
 	};
 
-	const getCleanSheet = (acc, stats,index, matchesLength) => {
+	const getCleanSheet = (acc, stats,index, matchesLength, isH2H = false) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const goalsHome = stats.goals.home;
@@ -368,6 +377,11 @@ export default function (fixture) {
 
 		createCategoryObject(acc, "Clean Sheet", `yes`, homeTeam,awayTeam);
 
+		if(isH2H){
+			sumToCategory(acc, "yes","away",awayTeamSide)
+			sumToCategory(acc, "yes","home", homeTeamSide)
+			return
+		}
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, "yes","away", goalsHome,awayTeamSide) :	sumToCategory(acc, "yes","home",goalsAway, homeTeamSide)
 		}else{
@@ -377,7 +391,7 @@ export default function (fixture) {
 	
 	};
  
-	const getFirstTeamToScore = (acc, stats,index, matchesLength) => {
+	const getFirstTeamToScore = (acc, stats,index, matchesLength, isH2H = false) => {
 		
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
@@ -395,6 +409,12 @@ export default function (fixture) {
 
 		createCategoryObject(acc, "First Team To Score", `yes`, homeTeam,awayTeam);
 
+		if(isH2H){
+			sumToCategory(acc, "yes","away",awayTeamSide)
+			sumToCategory(acc, "yes","home", homeTeamSide)
+			return
+		}
+
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, "yes","away",awayTeamSide) :	sumToCategory(acc, "yes","home", homeTeamSide)
 		}else{
@@ -404,7 +424,7 @@ export default function (fixture) {
 
 	};
 
-	const getTotalCorners = (acc, stats, value,index, matchesLength) => {
+	const getTotalCorners = (acc, stats, value,index, matchesLength, isH2H = false) => {
 	
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
@@ -425,6 +445,13 @@ export default function (fixture) {
 
 		createCategoryObject(acc, "Total Corners", `+${value}`, homeTeam,awayTeam);
 
+			
+		if(isH2H){
+			sumToCategory(acc, `+${value}`,"away",awayTeamSide)
+			sumToCategory(acc, `+${value}`,"home", homeTeamSide)
+			return
+		}
+
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, `+${value}`,"away",awayTeamSide) :	sumToCategory(acc, `+${value}`,"home", homeTeamSide)
 		}else{
@@ -434,7 +461,7 @@ export default function (fixture) {
 	
 	};
 
-	const getTotalCards = (acc, stats, value,index, matchesLength) => {
+	const getTotalCards = (acc, stats, value,index, matchesLength, isH2H = false) => {
 		
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
@@ -458,6 +485,11 @@ export default function (fixture) {
 
 	
 
+		if(isH2H){
+			sumToCategory(acc, `+${value}`,"away",awayTeamSide)
+			sumToCategory(acc, `+${value}`,"home", homeTeamSide)
+			return
+		}
 
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, `+${value}`,"away",awayTeamSide) :	sumToCategory(acc, `+${value}`,"home", homeTeamSide)
@@ -466,7 +498,7 @@ export default function (fixture) {
 		}
 	};
 
-	const getDrawNoBet = (acc, stats,index, matchesLength) => {
+	const getDrawNoBet = (acc, stats,index, matchesLength, isH2H = false) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const goalsHome = stats.goals.home;
@@ -481,6 +513,12 @@ export default function (fixture) {
 
 		createCategoryObject(acc, "Draw No Bet", `yes`, homeTeam,awayTeam);
 
+		if(isH2H){
+			sumToCategory(acc, `yes`,"away",awayTeamSide)
+			sumToCategory(acc, `yes`,"home", homeTeamSide)
+			return
+		}
+
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, `yes`,"away",awayTeamSide) :	sumToCategory(acc, `yes`,"home", homeTeamSide)
 		}else{
@@ -489,7 +527,7 @@ export default function (fixture) {
 	
 	}; 
 
-	const getGoalsByTime = (acc, stats, time,index,matchesLength) => {
+	const getGoalsByTime = (acc, stats, time,index,matchesLength, isH2H = false) => {
 		const homeTeamSide = Object.values(stats.teams).find(team => team.id === homeTeam.value.id);
 		const awayTeamSide = Object.values(stats.teams).find(team => team.id === awayTeam.value.id);
 		const divideTime = time.split("-")
@@ -504,6 +542,12 @@ export default function (fixture) {
 
 		createCategoryObject(acc, "Scored Between",`${time}`, homeTeam,awayTeam);
 
+		
+		if(isH2H){
+			sumToCategory(acc, `${time}`,"away",awayTeamSide)
+			sumToCategory(acc, `${time}`,"home", homeTeamSide)
+			return
+		}
 
 		if(isGameBetweenEachOther){
 			isAwayGames ? sumToCategory(acc, `${time}`,"away",awayTeamSide) :	sumToCategory(acc, `${time}`,"home", homeTeamSide)

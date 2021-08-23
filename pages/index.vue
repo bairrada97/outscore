@@ -4,6 +4,15 @@
 			<Calendar />
 		</LazyHydrate>
 		<CalendarBar />
+		<div class="leagueContainer">
+			<div class="align--full">
+				<h2 class="leagueTypes">Favorite Leagues</h2>
+				<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
+					<CardLeague :name="competition[0].league.name" :league="competition" />
+					<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
+				</div>
+			</div>
+		</div>
 
 		<div class="leagueContainer">
 			<h2 class="leagueTypes">National Leagues</h2>
@@ -50,6 +59,16 @@
 			const liveToggle = computed(() => store.getLiveToggle());
 			const { liveGames, loadLiveGames } = useLiveGames();
 			const { games, loadGames } = useGamesByDate();
+			const favoriteLeaguesID = ref([94, 39, 140, 135, 61, 78]);
+
+			const getFavoriteLeagues = computed(() => {
+				return Object.values(getLeagues.value)
+					?.map(country => Object.values(country.league))
+					.flat(1)
+					.filter(item => item.find(league => favoriteLeaguesID.value.includes(league.league.id)));
+			});
+
+			console.log(getFavoriteLeagues);
 
 			const getOpenGame = game => openGames.value.find(item => item.country == game.country);
 			const openGame = ({ currentTarget }, countryName) => {
@@ -82,16 +101,6 @@
 					getLeagues.value = games.value;
 				});
 			});
-
-			watch(
-				() => [selectedDate.value, liveToggle.value],
-				(newValue, prevValue) => {
-					const dateHasChanged = newValue[0] != prevValue[0];
-					openGames.value = [];
-					liveToggle.value && !dateHasChanged ? toggleLive() : fetch();
-					dateHasChanged ? fetch() : "";
-				}
-			);
 
 			const fetchOnBrowserVisibility = () => {
 				if (document.visibilityState == "hidden") {
@@ -139,6 +148,16 @@
 				}, 15000);
 			});
 
+			watch(
+				() => [selectedDate.value, liveToggle.value],
+				(newValue, prevValue) => {
+					const dateHasChanged = newValue[0] != prevValue[0];
+					openGames.value = [];
+					liveToggle.value && !dateHasChanged ? toggleLive() : fetch();
+					dateHasChanged ? fetch() : "";
+				}
+			);
+
 			store.setSelectedMatch({});
 
 			return {
@@ -152,7 +171,8 @@
 				loading,
 				liveToggle,
 				isShown,
-				getOpenGame
+				getOpenGame,
+				getFavoriteLeagues
 			};
 		}
 	});
@@ -160,15 +180,24 @@
 
 <style lang="scss">
 	.leagueContainer {
-		margin-bottom: 55px;
+		&:last-of-type {
+			margin-bottom: 55px;
+		}
 	}
 	.leagueTypes {
 		font-size: 14px;
 		font-weight: 600;
 		margin-top: 16px;
 		height: 40px;
-		padding-left: 32px;
+		padding-left: 16px;
 		display: flex;
 		align-items: center;
+	}
+
+	.favoriteLeagues {
+		border: 1px solid rgba(183, 183, 183, 0.3);
+		&:not(:last-of-type) {
+			margin-bottom: 8px;
+		}
 	}
 </style>
