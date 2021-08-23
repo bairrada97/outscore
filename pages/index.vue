@@ -62,6 +62,7 @@
 			const favoriteLeaguesID = ref([94, 39, 140, 135, 61, 78]);
 
 			const getFavoriteLeagues = computed(() => {
+				if (!getLeagues.value) return;
 				return Object.values(getLeagues?.value)
 					?.map(country => Object.values(country.league))
 					.flat(1)
