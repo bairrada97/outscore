@@ -62,7 +62,7 @@
 			const favoriteLeaguesID = ref([94, 39, 140, 135, 61, 78]);
 
 			const getFavoriteLeagues = computed(() => {
-				return Object.values(getLeagues.value)
+				return Object.values(getLeagues?.value)
 					?.map(country => Object.values(country.league))
 					.flat(1)
 					.filter(item => item.find(league => favoriteLeaguesID.value.includes(league.league.id)));
