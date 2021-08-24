@@ -7,7 +7,7 @@
 		<div class="leagueContainer">
 			<div class="align--full">
 				<h2 class="leagueTypes">Favorite Leagues</h2>
-				<div v-if="getFavoriteLeagues">
+				<div v-if="getFavoriteLeagues.length">
 					<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
 						<CardLeague :name="competition[0].league.name" :league="competition" />
 						<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
@@ -78,8 +78,9 @@
 				const offset = -45;
 				if (openGames.value.includes(countryName)) {
 					openGames.value = openGames.value.filter(game => game.country != countryName.country);
-
-					window.scrollTo({ top: currentTarget.getBoundingClientRect().top + window.pageYOffset + offset });
+					if (window.pageYOffset > currentTarget.getBoundingClientRect().top + window.pageYOffset + offset) {
+						window.scrollTo({ top: currentTarget.getBoundingClientRect().top + window.pageYOffset + offset });
+					}
 				} else {
 					openGames.value.push(countryName);
 					setTimeout(() => {
