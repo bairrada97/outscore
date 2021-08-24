@@ -7,7 +7,7 @@
 		<div class="leagueContainer">
 			<div class="align--full">
 				<h2 class="leagueTypes">Favorite Leagues</h2>
-				<div v-if="getFavoriteLeagues.length > 0">
+				<div v-if="getFavoriteLeagues">
 					<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
 						<CardLeague :name="competition[0].league.name" :league="competition" />
 						<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
