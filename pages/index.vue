@@ -4,13 +4,17 @@
 			<Calendar />
 		</LazyHydrate>
 		<CalendarBar />
-		<div class="leagueContainer" v-if="getFavoriteLeagues">
+		<div class="leagueContainer">
 			<div class="align--full">
 				<h2 class="leagueTypes">Favorite Leagues</h2>
-				<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
-					<CardLeague :name="competition[0].league.name" :league="competition" />
-					<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
+				<div v-if="getFavoriteLeagues.length > 0">
+					<div v-for="(competition, key) in getFavoriteLeagues" :key="key" class="favoriteLeagues">
+						<CardLeague :name="competition[0].league.name" :league="competition" />
+						<CardGame :game="game" v-for="game in competition" :key="game.fixture.id" />
+					</div>
 				</div>
+
+				<p v-else class="noFavoriteLeague">Currently you haven't select any favorite leagues</p>
 			</div>
 		</div>
 
@@ -59,7 +63,7 @@
 			const liveToggle = computed(() => store.getLiveToggle());
 			const { liveGames, loadLiveGames } = useLiveGames();
 			const { games, loadGames } = useGamesByDate();
-			const favoriteLeaguesID = ref([94, 39, 140, 135, 61, 78]);
+			const favoriteLeaguesID = ref([2, 3, 94, 39, 140, 135, 61, 78]);
 
 			const getFavoriteLeagues = computed(() => {
 				if (!getLeagues.value) return;
@@ -198,5 +202,9 @@
 		&:not(:last-of-type) {
 			margin-bottom: 8px;
 		}
+	}
+
+	.noFavoriteLeague {
+		padding-left: 16px;
 	}
 </style>
